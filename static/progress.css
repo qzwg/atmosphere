@@ -16,7 +16,7 @@
     width: 150px;
     height: 150px;
     }
-    
+
     .circle-chart__circle {
     stroke: #00acc1;
     stroke-width: 2;
@@ -26,7 +26,7 @@
     transform: rotate(-90deg); /* 2, 3 */
     transform-origin: center; /* 4 */
     }
-    
+
     /**
     * 1. Rotate by -90 degree to make the starting point of the
     * stroke the top of the circle.
@@ -36,51 +36,65 @@
     * and Edge, use the transform attribute directly on the SVG element as a
     * . workaround.
     */
-    
+
     .circle-chart__circle--negative {
     transform: rotate(-90deg) scale(1,-1); /* 1, 2, 3 */
     }
-    
+
     .circle-chart__background {
     stroke: #efefef;
     stroke-width: 2;
     fill: none;
     }
-    
+
     .circle-chart__info {
     animation: circle-chart-appear 2s forwards;
     opacity: 0;
     transform: translateY(0.3em);
     }
-    
+
     .circle-chart__percent {
     alignment-baseline: central;
     text-anchor: middle;
     font-size: 8px;
     }
-    
+
     .circle-chart__subline {
     alignment-baseline: central;
     text-anchor: middle;
     font-size: 3px;
     }
-    
+
     .success-stroke {
     stroke: #00C851;
     }
-    
+
     .warning-stroke {
     stroke: #ffbb33;
     }
-    
+
     .danger-stroke {
     stroke: #ff4444;
     }
-    
+  .yellow-stroke {
+  stroke: #efdc31;
+  }
+  .middle-stroke {
+  stroke: #ff401a;
+  }
+  .light-stroke {
+  stroke: #ff401a;
+  }
+  .severe-stroke {
+  stroke: #d20040;
+  }
+  .serious-stroke {
+  stroke: #d20040;
+  }
     @keyframes circle-chart-fill {
     to { stroke-dasharray: 0 100; }
     }
-    
+
     @keyframes circle-chart-appear {
     to {
     opacity: 1;

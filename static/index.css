@@ -359,7 +359,7 @@ body {
 
 .city_table {
   clear: both;
-  /*height: 18vh;*/
+  height: 18vh;
   /*overflow-y: scroll;*/
   padding: 5px;
 }
@@ -400,16 +400,17 @@ body {
 
 .city_table table {
   /*font-size: 15px;*/
+  /*height: 17vh;*/
 }
 .city_table table i{
   font-size: 17px;
 }
-.city_table table tbody tr td:nth-child(3) span {
-  background-color: rgb(188, 176, 42);
-  border-radius: 10px;
-  padding: 5px 15px;
-  color: #fff;
-}
+/*.city_table table tbody tr td:nth-child(3) span {*/
+  /*background-color: rgb(188, 176, 42);*/
+  /*border-radius: 10px;*/
+  /*padding: 5px 15px;*/
+  /*color: #fff;*/
+/*}*/
 
 .content_right {
   padding-right: 0;

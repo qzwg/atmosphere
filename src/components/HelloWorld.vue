@@ -30,7 +30,7 @@
             </p>
             <div class="air ">
               <div class="col-xs-6">
-                <div class="circlechart" data-percentage="30">30%</div>
+                <div class="circlechart">141</div>
               </div>
               <div class="col-xs-6 whpadding ">
                 首要污染物：PM2.5<br>
@@ -80,8 +80,8 @@
                 </div>
               </div>
               <div class="airsix_bottom">
-                <i class="fa fa-angle-double-up details_updown"></i>
-                <i class="fa fa-angle-double-down details_updown"></i>
+                <i class="fa fa-angle-double-up " v-on:click='details_updown'></i>
+                <i class="fa fa-angle-double-down " v-on:click='details_updown' ></i>
                 <div id="left_detail" class="">查看详情</div>
               </div>
             </div>
@@ -107,8 +107,8 @@
                   <li>年</li>
                 </ul>
               </div>
-              <div class="city_table">
-                <i-table height="180" width="10%" :columns="columns1" :data="data2"></i-table>
+              <div id="_city_table_id" class="city_table">
+                <i-table :height="eleHeight"  width="10%" :columns="columns1" :data="data2"></i-table>
 
               </div>
             </div>
@@ -759,184 +759,290 @@
   import Vue from 'vue'
   import VAirtarget from '../components/Air_target'
   import {Table} from  'iview'
+  import $ from 'jquery'
   Vue.component('i-table', Table);
   export default {
     data () {
       return {
+        eleHeight:'180',
         columns1: [
           {
             title: '排名',
-            key: 'name',
+            key: 'rank',
             align:'center',
-            width:'60'
+            width:'30'
           },
           {
             title: '城市',
             align:'center',
-            key: 'age',
-            width:'120'
+            key: 'cityName',
+            width:'90'
           },
           {
             title: 'AQI',
             align:'center',
-            key: 'address',
+            key: 'AQI',
             width:'60',
-            sortable: true
+            sortable: true,
+            render:(h, params) => {
+              return h('span',{style:{color:'#fff',
+                  padding:'5px 15px',
+                  borderRadius:'10px',
+                  backgroundColor: 'rgb(188, 176, 42)'
+                }},params.row.AQI);
+            }
           },
           {
 
             align:'center',
-            width:'80',
-            key: 'address',
+            width:'60',
+            key: 'PM25',
+            sortable: true,
             renderHeader:(h, params) => {
-              return h('div', [
-                h('span', {
-                  props: {
-                    class: 'whsub'
-                  }
-                },'2.5')
-              ],'PM');
+              return h('div',{style:{display:'inline'}}, [
+                h('span','PM'),
+                h('sub', '2.5')
+              ]);
             }
           },
           {
             align:'center',
-            width:'60',
-            key: 'address',
+            width:'50',
+            key: 'PM10',
+            sortable: true,
             renderHeader:(h, params) => {
-              return h('div', [
-                h('span', {
-                  props: {
-                    class: 'whsub'
-                  }
-                },'10')
-              ],'PM');
+              return h('div',{style:{display:'inline'}}, [
+                h('span','PM'),
+                h('sub', '10')
+              ]);
             }
           },
           {
             align:'center',
-            width:'60',
-            key: 'address',
+            width:'50',
+            key: 'O3',
+            sortable: true,
             renderHeader:(h, params) => {
-              return h('div', [
-                h('span', {
-                  props: {
-                    class: 'whsub'
-                  }
-                },'3')
-              ],'O');
+              return h('div',{style:{display:'inline'}}, [
+                h('span','O'),
+                h('sub', '3')
+              ]);
             }
           },
           {
             title: 'CO',
             align:'center',
-            width:'60',
-            key: 'address'
+            width:'50',
+            sortable: true,
+            key: 'CO'
           },
           {
-            title: 'NO<span class="whsub">2</span>',
             align:'center',
-            width:'60',
-            key: 'address',
+            width:'50',
+            key: 'NO2',
+            sortable: true,
             renderHeader:(h, params) => {
-              return h('div', [
-                h('span', {
-                  props: {
-                    class: 'whsub'
-                  }
-                },'2')
-              ],'NO');
+              return h('div',{style:{display:'inline'}}, [
+                h('span','NO'),
+                h('sub', '2')
+              ]);
+
             }
           },
           {
             align:'center',
-            width:'60',
-            key: 'address',
+            width:'80',
+            key: 'SO2',
+            sortable: true,
             renderHeader:(h, params) => {
-              return h('div', [
-                h('span', {
-                  props: {
-                    class: 'whsub'
-                  }
-                },'2')
-              ],'SO');
+              return h('div',{style:{display:'inline'}}, [
+                h('span','SO'),
+                h('sub', '2')
+              ]);
+
             }
           }
         ],
         data2: [
           {
-            name: 'John Brown',
-            age: 18,
-            address: 'New York No. 1 Lake Park',
-            date: '2016-10-03'
+            cityName: '郑州',
+            rank: 1,
+            AQI: '15',
+            PM25: '23',
+            PM10: '17',
+            O3: '19',
+            CO: '15',
+            NO2: '49',
+            SO2: '39',
           },
           {
-            name: 'Jim Green',
-            age: 24,
-            address: 'London No. 1 Lake Park',
-            date: '2016-10-01'
+            cityName: '许昌',
+            rank: 2,
+            AQI: '35',
+            PM25: '53',
+            PM10: '27',
+            O3: '49',
+            CO: '17',
+            NO2: '43',
+            SO2: '89',
           },
           {
-            name: 'Joe Black',
-            age: 30,
-            address: 'Sydney No. 1 Lake Park',
-            date: '2016-10-02'
+            cityName: '平顶山你',
+            rank: 3,
+            AQI: '89',
+            PM25: '53',
+            PM10: '27',
+            O3: '15',
+            CO: '65',
+            NO2: '99',
+            SO2: '29',
           },
           {
-            name: 'Jon Snow',
-            age: 26,
-            address: 'Ottawa No. 2 Lake Park',
-            date: '2016-10-04'
+            cityName: '驻马店',
+            rank: 4,
+            AQI: '89',
+            PM25: '53',
+            PM10: '27',
+            O3: '15',
+            CO: '65',
+            NO2: '99',
+            SO2: '29',
           },
           {
-            name: 'John Brown',
-            age: 18,
-            address: 'New York No. 1 Lake Park',
-            date: '2016-10-03'
+            cityName: '信阳',
+            rank: 5,
+            AQI: '89',
+            PM25: '53',
+            PM10: '27',
+            O3: '15',
+            CO: '65',
+            NO2: '99',
+            SO2: '29',
           },
-          {
-            name: 'Jim Green',
-            age: 24,
-            address: 'London No. 1 Lake Park',
-            date: '2016-10-01'
-          },
-          {
-            name: 'Joe Black',
-            age: 30,
-            address: 'Sydney No. 1 Lake Park',
-            date: '2016-10-02'
-          },
-          {
-            name: 'Jon Snow',
-            age: 26,
-            address: 'Ottawa No. 2 Lake Park',
-            date: '2016-10-04'
-          }
+
         ]
       }
     },
     components: {
       VAirtarget
+    },
+    mounted (){
+      this.eleHeight = $('#_city_table_id').height()
+    },
+    methods:{
+      details_updown(type){
+        console.log("fff");
+        var that = this
+        $(".airsix_bottom>i").css("margin", "auto");
+        // $("#details").css("height","36vh");
+        if ($(".fa-angle-double-down").css("display") == "none") {
+          console.log("上滑");
+          $(".fa-angle-double-up").css("display", "none");
+          $(".fa-angle-double-down").css("display", "block");
+          $(".airsix_content").slideUp(500);
+          $(".content_left_top").animate({"height": "30vh"}, 500);
+          $(".content_left_bottom").animate({"height": "52vh"}, 500);
+          $(".city_table").animate({"height": "42.5vh"}, 500,function () {
+            console.log($('#_city_table_id').height())
+            that.eleHeight = $('#_city_table_id').height()
+            console.log(that.eleHeight)
+          });
+          $("#details").css("top", "5vh");
+
+        } else {
+          console.log("下滑");
+          $(".fa-angle-double-down").css("display", "none");
+          $(".fa-angle-double-up").css("display", "block");
+          $(".airsix_content").slideDown(500);
+          $(".content_left_top").animate({"height": "54.5vh"}, 500);
+          $(".content_left_bottom").animate({"height": "27.5vh"}, 500);
+          $(".city_table").animate({"height": "18vh"}, 500,function () {
+            console.log($('#_city_table_id').height())
+            that.eleHeight = $('#_city_table_id').height()-10
+            console.log(that.eleHeight)
+          });
+          $("#details").css("top", "29.5vh");
+        }
+
+      },
     }
   }
 
 </script>
 <style>
-  .ivu-table-wrapper {
-    position: relative;
-    /*border: 1px solid #dcdee2;*/
-    border-bottom: 0;
-    border-right: 0
-  }
+
   .ivu-table {
     width: inherit;
     height: 100%;
     max-width: 100%;
     overflow: hidden;
     color: #fff;
-    font-size: 15px;
-    /*background-color: #fff;*/
-    box-sizing: border-box;
+    font-size: 12px;
+    background-color: transparent;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box
   }
+
+  .ivu-table-wrapper {
+    position: relative;
+    /*border: 1px solid #dcdee2;*/
+    border-bottom: 0;
+    border-right: 0
+  }
+
+  .ivu-table-hide {
+    opacity: 0
+  }
+
+  .ivu-table:before {
+    content: '';
+    width: 100%;
+    height: 1px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background-color: transparent;
+    z-index: 1
+  }
+
+  .ivu-table:after {
+    content: '';
+    width: 1px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: transparent;
+    z-index: 3
+  }
+
+  .ivu-table-footer, .ivu-table-title {
+    height: 48px;
+    line-height: 48px;
+    /*border-bottom: 1px solid #e8eaec*/
+  }
+
+  .ivu-table-footer {
+    border-bottom: none
+  }
+
+  .ivu-table-header {
+    overflow: hidden
+  }
+
+  .ivu-table-overflowX {
+    overflow-x: scroll
+  }
+
+  .ivu-table-overflowY {
+    overflow-y: scroll
+  }
+
+  .ivu-table-tip {
+    overflow-x: auto;
+    overflow-y: hidden
+  }
+
   .ivu-table-with-fixed-top.ivu-table-with-footer .ivu-table-footer {
     /*border-top: 1px solid #dcdee2*/
   }
@@ -945,19 +1051,105 @@
     border-bottom: none
   }
 
-  .ivu-table-header {
-    overflow: hidden
+  .ivu-table td, .ivu-table th {
+    min-width: 0;
+    height: 30px;
+    line-height: 30px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    text-align: left;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    /*border-bottom: 1px solid #e8eaec*/
   }
+
+  .ivu-table th {
+    height: 35px;
+    white-space: nowrap;
+    overflow: hidden;
+    background-color: transparent;
+  }
+
+  .ivu-table td {
+    background-color: transparent;
+    -webkit-transition: background-color .2s ease-in-out;
+    transition: background-color .2s ease-in-out
+  }
+
+  td.ivu-table-column-left, th.ivu-table-column-left {
+    text-align: left
+  }
+
+  td.ivu-table-column-center, th.ivu-table-column-center {
+    text-align: center
+  }
+
+  td.ivu-table-column-right, th.ivu-table-column-right {
+    text-align: right
+  }
+
+  .ivu-table table {
+    table-layout: fixed
+  }
+
+  .ivu-table-border td, .ivu-table-border th {
+    border-right: 1px solid #e8eaec
+  }
+
   .ivu-table-cell {
     /*padding-left: 18px;*/
     /*padding-right: 18px;*/
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
-    /*word-break: break-all;*/
+    word-break: break-all;
     -webkit-box-sizing: border-box;
     box-sizing: border-box
   }
+
+  .ivu-table-cell-ellipsis {
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+  }
+
+  .ivu-table-cell-tooltip {
+    width: 100%
+  }
+
+  .ivu-table-cell-tooltip-content {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+  }
+
+  .ivu-table-cell-with-expand {
+    height: 47px;
+    line-height: 47px;
+    padding: 0;
+    text-align: center
+  }
+
+  .ivu-table-cell-expand {
+    cursor: pointer;
+    -webkit-transition: -webkit-transform .2s ease-in-out;
+    transition: -webkit-transform .2s ease-in-out;
+    transition: transform .2s ease-in-out;
+    transition: transform .2s ease-in-out, -webkit-transform .2s ease-in-out
+  }
+
+  .ivu-table-cell-expand i {
+    font-size: 14px
+  }
+
+  .ivu-table-cell-expand-expanded {
+    -webkit-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg)
+  }
+
   .ivu-table-cell-sort {
     cursor: pointer;
     -webkit-user-select: none;
@@ -965,39 +1157,321 @@
     -ms-user-select: none;
     user-select: none
   }
-  .ivu-table-overflowY {
-    overflow-y: scroll;
+
+  .ivu-table-cell-with-selection .ivu-checkbox-wrapper {
+    margin-right: 0
   }
-  .ivu-table-overflowX {
-    overflow-x: scroll
+
+  .ivu-table-hidden {
+    visibility: hidden
   }
-  .ivu-table-tip {
-    overflow-x: auto;
-    overflow-y: hidden
+
+  th .ivu-table-cell {
+    display: inline-block;
+    word-wrap: normal;
+    vertical-align: middle
   }
+
+
+
+
+
+
+  .ivu-table-large {
+    font-size: 14px
+  }
+
+  .ivu-table-large th {
+    height: 48px
+  }
+
+  .ivu-table-large td {
+    height: 60px
+  }
+
+  .ivu-table-large-footer, .ivu-table-large-title {
+    height: 60px;
+    line-height: 60px
+  }
+
+  .ivu-table-large .ivu-table-cell-with-expand {
+    height: 59px;
+    line-height: 59px
+  }
+
+  .ivu-table-large .ivu-table-cell-with-expand i {
+    font-size: 16px
+  }
+
+  .ivu-table-small th {
+    height: 32px
+  }
+
+  .ivu-table-small td {
+    height: 40px
+  }
+
+  .ivu-table-small-footer, .ivu-table-small-title {
+    height: 40px;
+    line-height: 40px
+  }
+
+  .ivu-table-small .ivu-table-cell-with-expand {
+    height: 39px;
+    line-height: 39px
+  }
+
+  .ivu-table-row-highlight td, .ivu-table-stripe .ivu-table-body tr.ivu-table-row-highlight:nth-child(2n) td, .ivu-table-stripe .ivu-table-fixed-body tr.ivu-table-row-highlight:nth-child(2n) td, tr.ivu-table-row-highlight.ivu-table-row-hover td {
+    background-color: #ebf7ff
+  }
+
+  .ivu-table-fixed, .ivu-table-fixed-right {
+    position: absolute;
+    top: 0;
+    left: 0;
+    -webkit-box-shadow: 2px 0 6px -2px rgba(0, 0, 0, .2);
+    box-shadow: 2px 0 6px -2px rgba(0, 0, 0, .2)
+  }
+
+  .ivu-table-fixed-right::before, .ivu-table-fixed::before {
+    content: '';
+    width: 100%;
+    height: 1px;
+    background-color: #dcdee2;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 4
+  }
+
+  .ivu-table-fixed-right {
+    top: 0;
+    left: auto;
+    right: 0;
+    -webkit-box-shadow: -2px 0 6px -2px rgba(0, 0, 0, .2);
+    box-shadow: -2px 0 6px -2px rgba(0, 0, 0, .2)
+  }
+
+  .ivu-table-fixed-right-header {
+    position: absolute;
+    top: -1px;
+    right: 0;
+    background-color: #f8f8f9;
+    border-top: 1px solid #dcdee2;
+    border-bottom: 1px solid #e8eaec
+  }
+
+  .ivu-table-fixed-header {
+    overflow: hidden
+  }
+
+  .ivu-table-fixed-body {
+    overflow: hidden;
+    position: relative;
+    z-index: 3
+  }
+
+  .ivu-table-fixed-shadow {
+    width: 1px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    -webkit-box-shadow: 1px 0 6px rgba(0, 0, 0, .2);
+    box-shadow: 1px 0 6px rgba(0, 0, 0, .2);
+    overflow: hidden;
+    z-index: 1
+  }
+
   .ivu-table-sort {
     display: inline-block;
-    width: 25px;
+    width: 14px;
     height: 12px;
     margin-top: -1px;
+    margin-left: -6px;
     vertical-align: middle;
     overflow: hidden;
     cursor: pointer;
-    position: relative;
+    position: relative
   }
-  .ivu-table-sort i:first-child {
-    top: 0;
-  }
+
   .ivu-table-sort i {
     display: block;
     height: 6px;
     line-height: 6px;
     overflow: hidden;
     position: absolute;
-    color: #fff;
+    color: #c5c8ce;
+    -webkit-transition: color .2s ease-in-out;
     transition: color .2s ease-in-out;
-    font-size: 20px;
+    font-size: 16px
   }
+
+  .ivu-table-sort i:hover {
+    color: inherit
+  }
+
+  .ivu-table-sort i.on {
+    color: #2d8cf0
+  }
+
+  .ivu-table-sort i:first-child {
+    top: 0
+  }
+
+  .ivu-table-sort i:last-child {
+    bottom: 0
+  }
+
+  .ivu-table-filter {
+    display: inline-block;
+    cursor: pointer;
+    position: relative
+  }
+
+  .ivu-table-filter i {
+    color: #c5c8ce;
+    -webkit-transition: color .2s ease-in-out;
+    transition: color .2s ease-in-out
+  }
+
+  .ivu-table-filter i:hover {
+    color: inherit
+  }
+
+  .ivu-table-filter i.on {
+    color: #2d8cf0
+  }
+
+  .ivu-table-filter-list {
+    padding: 8px 0 0
+  }
+
+  .ivu-table-filter-list-item {
+    padding: 0 12px 8px
+  }
+
+  .ivu-table-filter-list-item .ivu-checkbox-wrapper + .ivu-checkbox-wrapper {
+    margin: 0
+  }
+
+  .ivu-table-filter-list-item label {
+    display: block
+  }
+
+  .ivu-table-filter-list-item label > span {
+    margin-right: 4px
+  }
+
+  .ivu-table-filter-list ul {
+    padding-bottom: 8px
+  }
+
+  .ivu-table-filter-list .ivu-table-filter-select-item {
+    margin: 0;
+    line-height: normal;
+    padding: 7px 16px;
+    clear: both;
+    color: #515a6e;
+    font-size: 12px !important;
+    white-space: nowrap;
+    list-style: none;
+    cursor: pointer;
+    -webkit-transition: background .2s ease-in-out;
+    transition: background .2s ease-in-out
+  }
+
+  .ivu-table-filter-list .ivu-table-filter-select-item:hover {
+    background: #f3f3f3
+  }
+
+  .ivu-table-filter-list .ivu-table-filter-select-item-focus {
+    background: #f3f3f3
+  }
+
+  .ivu-table-filter-list .ivu-table-filter-select-item-disabled {
+    color: #c5c8ce;
+    cursor: not-allowed
+  }
+
+  .ivu-table-filter-list .ivu-table-filter-select-item-disabled:hover {
+    color: #c5c8ce;
+    background-color: #fff;
+    cursor: not-allowed
+  }
+
+  .ivu-table-filter-list .ivu-table-filter-select-item-selected, .ivu-table-filter-list .ivu-table-filter-select-item-selected:hover {
+    color: #2d8cf0
+  }
+
+  .ivu-table-filter-list .ivu-table-filter-select-item-divided {
+    margin-top: 5px;
+    border-top: 1px solid #e8eaec
+  }
+
+  .ivu-table-filter-list .ivu-table-filter-select-item-divided:before {
+    content: '';
+    height: 5px;
+    display: block;
+    margin: 0 -16px;
+    background-color: #fff;
+    position: relative;
+    top: -7px
+  }
+
+  .ivu-table-filter-list .ivu-table-large .ivu-table-filter-select-item {
+    padding: 7px 16px 8px;
+    font-size: 14px !important
+  }
+
+  @-moz-document url-prefix() {
+    .ivu-table-filter-list .ivu-table-filter-select-item {
+      white-space: normal
+    }
+  }
+
+  .ivu-table-filter-footer {
+    padding: 4px;
+    border-top: 1px solid #e8eaec;
+    overflow: hidden
+  }
+
+  .ivu-table-filter-footer button:first-child {
+    float: left
+  }
+
+  .ivu-table-filter-footer button:last-child {
+    float: right
+  }
+
+  .ivu-table-tip table {
+    width: 100%
+  }
+
+  .ivu-table-tip table td {
+    text-align: center
+  }
+
+  .ivu-table-expanded-hidden {
+    visibility: hidden
+  }
+
+  .ivu-table-popper {
+    min-width: 0;
+    text-align: left
+  }
+
+  .ivu-table-popper .ivu-poptip-body {
+    padding: 0
+  }
+
+  @font-face {
+    font-family: Ionicons;
+    src: url(fonts/ionicons.ttf?v=3.0.0) format("truetype"), url(fonts/ionicons.woff?v=3.0.0) format("woff"), url(fonts/ionicons.svg?v=3.0.0#Ionicons) format("svg");
+    font-weight: 400;
+    font-style: normal
+  }
+
   .ivu-icon {
     display: inline-block;
     font-family: Ionicons;
@@ -1010,12 +1484,12 @@
     line-height: 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    vertical-align: middle;
+    vertical-align: middle
   }
-  .ivu-table-sort i:last-child {
-    bottom: 0;
+  .ivu-icon-md-arrow-dropup:before {
+    content: "\f343"
   }
-  .ivu-table-sort i.on {
-    color: #2b85e4;
+  .ivu-icon-md-arrow-dropdown:before {
+    content: "\f33d"
   }
 </style>
