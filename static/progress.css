@@ -66,7 +66,7 @@
     }
 
     .success-stroke {
-    stroke: #00C851;
+    stroke: #43ce17;
     }
 
     .warning-stroke {
@@ -77,19 +77,19 @@
     stroke: #ff4444;
     }
   .yellow-stroke {
-  stroke: #efdc31;
+  stroke: #ddd72c;
   }
   .middle-stroke {
-  stroke: #ff401a;
+  stroke: #ef6c19;
   }
   .light-stroke {
-  stroke: #ff401a;
+  stroke: #e7a423;
   }
   .severe-stroke {
-  stroke: #d20040;
+  stroke: #f7310f;
   }
   .serious-stroke {
-  stroke: #d20040;
+  stroke: #a7134c;
   }
     @keyframes circle-chart-fill {
     to { stroke-dasharray: 0 100; }

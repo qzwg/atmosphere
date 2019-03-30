@@ -764,7 +764,7 @@
   export default {
     data () {
       return {
-        eleHeight:'180',
+        eleHeight:'190',
         columns1: [
           {
             title: '排名',
@@ -776,7 +776,7 @@
             title: '城市',
             align:'center',
             key: 'cityName',
-            width:'90'
+            width:'80'
           },
           {
             title: 'AQI',
@@ -807,7 +807,7 @@
           },
           {
             align:'center',
-            width:'50',
+            width:'60',
             key: 'PM10',
             sortable: true,
             renderHeader:(h, params) => {
@@ -819,13 +819,14 @@
           },
           {
             align:'center',
-            width:'50',
+            width:'70',
             key: 'O3',
             sortable: true,
             renderHeader:(h, params) => {
               return h('div',{style:{display:'inline'}}, [
                 h('span','O'),
-                h('sub', '3')
+                h('sub', '3'),
+                h('span','(8h)'),
               ]);
             }
           },
@@ -889,7 +890,7 @@
           {
             cityName: '平顶山你',
             rank: 3,
-            AQI: '89',
+            AQI: '189',
             PM25: '53',
             PM10: '27',
             O3: '15',
@@ -927,7 +928,7 @@
       VAirtarget
     },
     mounted (){
-      this.eleHeight = $('#_city_table_id').height()
+      this.eleHeight = $('#_city_table_id').height()+5
     },
     methods:{
       details_updown(type){
@@ -958,7 +959,7 @@
           $(".content_left_bottom").animate({"height": "27.5vh"}, 500);
           $(".city_table").animate({"height": "18vh"}, 500,function () {
             console.log($('#_city_table_id').height())
-            that.eleHeight = $('#_city_table_id').height()-10
+            that.eleHeight = $('#_city_table_id').height()
             console.log(that.eleHeight)
           });
           $("#details").css("top", "29.5vh");
@@ -977,7 +978,7 @@
     max-width: 100%;
     overflow: hidden;
     color: #fff;
-    font-size: 12px;
+    font-size: 15px;
     background-color: transparent;
     -webkit-box-sizing: border-box;
     box-sizing: border-box
@@ -1053,8 +1054,8 @@
 
   .ivu-table td, .ivu-table th {
     min-width: 0;
-    height: 30px;
-    line-height: 30px;
+    height: 34px;
+    line-height: 34px;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     text-align: left;
@@ -1064,7 +1065,7 @@
   }
 
   .ivu-table th {
-    height: 35px;
+    height: 30px;
     white-space: nowrap;
     overflow: hidden;
     background-color: transparent;
@@ -1301,10 +1302,10 @@
     line-height: 6px;
     overflow: hidden;
     position: absolute;
-    color: #c5c8ce;
+    color: #fff;
     -webkit-transition: color .2s ease-in-out;
     transition: color .2s ease-in-out;
-    font-size: 16px
+    font-size: 17px
   }
 
   .ivu-table-sort i:hover {
