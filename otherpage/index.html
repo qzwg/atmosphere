@@ -31,7 +31,7 @@
 <body>
 <!--头部start-->
 <header class="header" style="">
-        <span style="" >
+        <span style="" id="return_index">
             <img src="img/logo.png" style="">
             大气环境AR实景调度决策
         </span>
@@ -526,6 +526,9 @@
 </script>
 
 <script>
+  $('#return_index').on('click',function () {
+    window.location.href= '../index.html'
+  })
     $(function () {
         $('.clickBag span:nth-child(1)').addClass('cur').siblings().removeClass('cur')
         $('.clickBag span').click(function () {

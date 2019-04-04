@@ -31,7 +31,7 @@
 <body>
 <!--头部start-->
 <header class="header" style="">
-        <span style="">
+        <span style="" id="return_index">
             <img src="img/logo.png" style="">
             大气环境AR实景调度决策
         </span>
@@ -55,6 +55,12 @@
     <img src="img/engineering.png" style="width: 90%;height: 100%;padding-left: 58px">
 </div>
 </body>
+<script src="js/jquery-1.8.3.min.js"></script>
+<script>
+  $('#return_index').on('click',function () {
+    window.location.href= '../index.html'
+  })
+</script>
 
 </html>
 
