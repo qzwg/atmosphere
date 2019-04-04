@@ -11,7 +11,7 @@
       </div>
       <div class="menu">
         <ul>
-          <li>调度</li>
+          <li @click="dispatch_page()">调度</li>
           <li>会商</li>
           <li>数据服务</li>
           <li>政策动态</li>
@@ -965,6 +965,9 @@
           $("#details").css("top", "29.5vh");
         }
 
+      },
+      dispatch_page(){
+        window.location.href = './otherpage/index.html'
       },
     }
   }

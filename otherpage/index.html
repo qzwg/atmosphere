@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>指标调度</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .main-left::-webkit-scrollbar
+        {
+            width: 8px;
+            height: 1px;
+            background-color: #000;/*//背景色*/
+        }
+        /*定义滚动条轨道 内阴影+圆角*//* 滚动槽 */
+        .main-left::-webkit-scrollbar-track
+        {
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+            border-radius: 10px;
+            background-color: #54a7d8;/*滚动条槽的颜色*/
+        }
+        /*定义滑块 内阴影+圆角*//* 滚动条滑块 */
+        .main-left::-webkit-scrollbar-thumb
+        {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.1);
+            background-color: #555;
+        }
+
+    </style>
+</head>
+<body>
+<!--头部start-->
+<header class="header" style="">
+        <span style="" id="return_index">
+            <img src="img/logo.png" style="">
+            大气环境AR实景调度决策
+        </span>
+</header>
+<!--头部end-->
+
+<!--tab栏，更新时间start-->
+<nav class="nav" style="">
+    <div class="nav_left" style="">
+        <span style="">指标调度</span>
+        <span ><a href="engineering.html" style="text-decoration:none">工程调度</a></span>
+        <span ><a href="" style="text-decoration:none">超标调度</a></span>
+    </div>
+    <div class="nav_right" style="">
+        <span style="">更新于2019-01-21</span>
+    </div>
+</nav>
+<!--tab栏，更新时间end-->
+
+<!--主体start-->
+<div id="dispatch">
+    <!--左侧内容-->
+    <div class="dispatch_left" style="">
+        <!--累计浓度值-->
+        <div style="height: 450px;">
+            <div style="width: 97%;height: 48px;border-bottom: 1px solid #aaa">
+                <div style="float: left">
+                    <span style="font-size: 30px;color: #f5f5f5">{{infosmsg}}</span>
+                </div>
+                <div style="float: right;padding-top: 15px;margin-right: 30px">
+                    <img src="img/heart.png" title="设置关心城市" style="cursor: pointer" class="like">
+                    <img src="img/placementUp.png" style="padding-left: 22px;cursor: pointer" title="置顶" @click="comprehensive()">
+                </div>
+                <!--关心城市-->
+               <!-- <div class="likediv" style="display:none;width: 316px;height: 196px;background: #033361;border: 1px solid #00c6ff;z-index: 888;position: absolute;left:43.5%;top: 30%;border-radius: 6px">
+                    <div>
+                        <select style="width: 234px;height: 38px;margin-top: 10px;margin-left: 14px;background: #295179;border:none;border-radius: 4px">
+                            <option style="color: #f5f5f5;height: 37px;background: #033361">请选择关心城市</option>
+                            <option style="color: #f5f5f5;height: 37px;background: #033361">请选择关心城市</option>
+                            <option style="color: #f5f5f5;height: 37px;background: #033361">请选择关心城市</option>
+                            <option style="color: #f5f5f5;height: 37px;background: #033361">请选择关心城市</option>
+                        </select>
+                    </div>
+                    <div style="margin-top: 16px">
+                        <span style="color: #01d8d0;font-size: 20px;padding-left: 15px;padding-top: 16px">石家庄</span>
+                        <span style="color: #01d8d0;font-size: 20px;padding-left: 10px;padding-top: 16px">邢台</span>
+                        <span style="color: #01d8d0;font-size: 20px;padding-left: 10px;padding-top: 16px">北京</span>
+                    </div>
+                    <button style="font-size:16px;border-radius:6px;position: absolute;left: 15px;bottom:20px;width: 66px;height: 32px;color: #fff;border: 1px solid #00c6ff;background: #033361">确定</button>
+                    <span class="guanbi" style="position: absolute;right: 0;bottom: 0">X</span>
+                </div>-->
+            </div>
+            <!--表格-->
+            <div class="main-left" style="height: 366px;margin-top: 16px;width: 95%;overflow-y:scroll;">
+                <table style="font-size: 18px;color: #54a7d8;cursor: pointer;">
+                    <tr v-if="code == '1'">
+                        <td width="100">&nbsp;排序</td>
+                        <td  width="100">&nbsp;城市</td>
+                        <td  width="100" >浓度<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td  width="100">变化率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td  width="100">&nbsp;目标</td>
+                        <td  width="100">完成率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td  width="100">控制值<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td  width="100">三年平均<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td  width="100">难度评估<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                    </tr>
+                    <tr v-if="code == '2' || code == '3'">
+                        <td width="100">&nbsp;排序</td>
+                        <td width="100">&nbsp;城市</td>
+                        <td width="100">&nbsp;综合指数</td>
+                        <td width="100">&nbsp;PM<span style="font-size: 10px">2.5</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;PM<span style="font-size: 10px">10</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;SO<span style="font-size: 10px">2</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;NO<span style="font-size: 10px">2</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;CO<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;O<span style="font-size: 10px">3</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                    </tr>
+
+                    <tr v-if="code == '1'" v-for="info in infos">
+                        <td width="100">&nbsp;{{info.sortId}}</td>
+                        <td width="100">&nbsp;{{info.simple_city_name}}</td>
+                        <td width="100">&nbsp;{{info.pm25}}</td>
+                        <td width="100">&nbsp;{{info.rateOfChange}}<!--<img src="up.png" style="display: inline-block;height: 18px">--></td>
+                        <td width="100;text-align: center">&nbsp;{{info.Pm25Target}}</td>
+                        <td width="100" title="完成率100%">&nbsp;{{infos.completion}}</td>
+                        <td width="100">&nbsp;{{info.controlVal}}</td>
+                        <td width="100">&nbsp;{{info.threeYearAvange}}</td>
+                        <td width="100">&nbsp;<!--<img src="hh.png" style="display: inline-block;height: 18px">-->{{info.difficultyAssesment}}</td>
+                    </tr>
+                    <tr v-if="code == '2'" v-for="gexian in infos">
+                        <td width="100">&nbsp;{{gexian.sortId}}</td>
+                        <td width="100">&nbsp;{{gexian.city_name}}</td>
+                        <td width="100">&nbsp;{{gexian.composite_index}}</td>
+                        <td width="100">&nbsp;{{gexian.pm25}}</td>
+                        <td width="100">&nbsp;{{gexian.pm10}}</td>
+                        <td width="100">&nbsp;{{gexian.so2}}</td>
+                        <td width="100">&nbsp;{{gexian.no2}}</td>
+                        <td width="100">&nbsp;{{gexian.co}}</td>
+                        <td width="100">&nbsp;{{gexian.o3}}</td>
+                    </tr>
+                    <tr v-if="code == '3'" v-for="gexian in infos">
+                        <td width="100">&nbsp;{{gexian.sortId}}</td>
+                        <td width="100">&nbsp;{{gexian.area_name}}</td>
+                        <td width="100">&nbsp;{{gexian.composite_index}}</td>
+                        <td width="100">&nbsp;{{gexian.pm25}}</td>
+                        <td width="100">&nbsp;{{gexian.pm10}}</td>
+                        <td width="100">&nbsp;{{gexian.so2}}</td>
+                        <td width="100">&nbsp;{{gexian.no2}}</td>
+                        <td width="100">&nbsp;{{gexian.co}}</td>
+                        <td width="100">&nbsp;{{gexian.o3}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!--各县区年综合指数排名-->
+        <div style="height: 500px;">
+            <div style="width: 97%;height: 48px;border-bottom: 1px solid #aaa">
+                <div style="float: left">
+                    <span style="font-size: 30px;color: #f5f5f5">{{infosmsg1}}</span>
+                </div>
+                <div style="float: right;padding-top: 15px;margin-right: 30px">
+                    <img src="img/heart.png" title="设置关心城市" style="cursor: pointer" class="like">
+                    <img src="img/placementUp.png" style="padding-left: 22px;cursor: pointer" title="置顶" @click="upAQI()" >
+                </div>
+                <!--<div class="likediv" style="display:none;width: 316px;height: 196px;background: #033361;border: 1px solid #00c6ff;z-index: 888;position: absolute;left:43.5%;top: 30%;border-radius: 6px">
+                    <div>
+                        <select style="width: 234px;height: 38px;margin-top: 10px;margin-left: 14px;background: #295179;border:none;border-radius: 4px">
+                            <option style="color: #f5f5f5;height: 37px;background: #033361">请选择关心城市</option>
+                            <option style="color: #f5f5f5;height: 37px;background: #033361">请选择关心城市</option>
+                            <option style="color: #f5f5f5;height: 37px;background: #033361">请选择关心城市</option>
+                            <option style="color: #f5f5f5;height: 37px;background: #033361">请选择关心城市</option>
+                        </select>
+                    </div>
+                    <div style="margin-top: 16px">
+                        <span style="color: #01d8d0;font-size: 20px;padding-left: 15px;padding-top: 16px">石家庄</span>
+                        <span style="color: #01d8d0;font-size: 20px;padding-left: 10px;padding-top: 16px">邢台</span>
+                        <span style="color: #01d8d0;font-size: 20px;padding-left: 10px;padding-top: 16px">北京</span>
+                    </div>
+                    <button style="font-size:16px;border-radius:6px;position: absolute;left: 15px;bottom:20px;width: 66px;height: 32px;color: #fff;border: 1px solid #00c6ff;background: #033361">确定</button>
+                    <span class="guanbi" style="position: absolute;right: 0;bottom: 0">X</span>
+                </div>-->
+            </div>
+
+            <!--表格-->
+            <div class="main-left" style="height: 366px;margin-top: 16px;width: 95%;overflow-y:scroll;">
+                <table style="font-size: 18px;color: #54a7d8">
+                    <tr>
+                        <td width="100">&nbsp;排序</td>
+                        <td width="100">&nbsp;城市</td>
+                        <td width="100">&nbsp;综合指数</td>
+                        <td width="100">&nbsp;PM<span style="font-size: 10px">2.5</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;PM<span style="font-size: 10px">10</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;SO<span style="font-size: 10px">2</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;NO<span style="font-size: 10px">2</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;CO<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;O<span style="font-size: 10px">3</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                    </tr>
+
+                    <tr v-if="code == '1' || code == '2'"  v-for="gexian in infos1">
+                        <td width="100">&nbsp;{{gexian.sortId}}</td>
+                        <td width="100">&nbsp;{{gexian.area_name}}</td>
+                        <td width="100">&nbsp;{{gexian.composite_index}}</td>
+                        <td width="100">&nbsp;{{gexian.pm25}}</td>
+                        <td width="100">&nbsp;{{gexian.pm10}}</td>
+                        <td width="100">&nbsp;{{gexian.so2}}</td>
+                        <td width="100">&nbsp;{{gexian.no2}}</td>
+                        <td width="100">&nbsp;{{gexian.co}}</td>
+                        <td width="100">&nbsp;{{gexian.o3}}</td>
+                    </tr>
+                    <tr v-if="code == '3'"  v-for="gexian in infos1">
+                        <td width="100">&nbsp;{{gexian.sortId}}</td>
+                        <td width="100">&nbsp;{{gexian.city_name}}</td>
+                        <td width="100">&nbsp;{{gexian.composite_index}}</td>
+                        <td width="100">&nbsp;{{gexian.pm25}}</td>
+                        <td width="100">&nbsp;{{gexian.pm10}}</td>
+                        <td width="100">&nbsp;{{gexian.so2}}</td>
+                        <td width="100">&nbsp;{{gexian.no2}}</td>
+                        <td width="100">&nbsp;{{gexian.co}}</td>
+                        <td width="100">&nbsp;{{gexian.o3}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!--右侧内容-->
+    <div style="width: 47%;float: right;margin-right: 20px">
+        <div style="height: 590px;">
+            <div style="width: 100%;height: 48px;border-bottom: 1px solid #aaa">
+                <div style="float: left">
+                    <span style="font-size: 30px;color: #f5f5f5">{{infosmsg2}}</span>
+                </div>
+                <div style="float: right;padding-top: 15px;margin-right: 30px">
+                    <img src="img/heart.png" title="设置关心城市" style="cursor: pointer">
+                    <img src="img/placementUp.png" style="padding-left: 22px;cursor: pointer" title="置顶" @click="upCity()">
+                </div>
+            </div>
+            <div style="width: 100%;height: 40px;" class="clickBag">
+                <span style="display:inline-block;width: 76px;height: 40px;background: #556886;color: #f5f5f5;font-size: 20px;margin-top: 10px;text-align: center;line-height: 40px;margin-left: 24px;border-radius: 8px;cursor: pointer">年</span>
+                <span style="display:inline-block;width: 76px;height: 40px;background: #556886;color: #f5f5f5;font-size: 20px;margin-top: 10px;text-align: center;line-height: 40px;margin-left: 8px;border-radius: 8px;cursor: pointer">月</span>
+                <span style="display:inline-block;width: 98px;height: 40px;background: #556886;color: #f5f5f5;font-size: 20px;margin-top: 10px;text-align: center;line-height: 40px;margin-left: 8px;border-radius: 8px;cursor: pointer">任意时间</span>
+                <span style="display:inline-block;width: 98px;height: 40px;background: #556886;color: #f5f5f5;font-size: 20px;margin-top: 10px;text-align: center;line-height: 40px;margin-left: 8px;border-radius: 8px;cursor: pointer">三年平均</span>
+            </div>
+
+
+            <div class="main-left" style="height: 467px;overflow-y:scroll;margin-top: 16px;width: 97%;">
+                <table style="font-size: 18px;color: #54a7d8">
+                    <tr v-if="code1 == '2' || code1 == '3'">
+                        <td width="100">&nbsp;排序</td>
+                        <td width="100">&nbsp;城市</td>
+                        <td width="100">&nbsp;综合指数</td>
+                        <td width="100">&nbsp;PM<span style="font-size: 10px">2.5</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;PM<span style="font-size: 10px">10</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;SO<span style="font-size: 10px">2</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;NO<span style="font-size: 10px">2</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;CO<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;O<span style="font-size: 10px">3</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                    </tr>
+                    <tr v-if="code1 == '1'">
+                        <td width="100">&nbsp;排序</td>
+                        <td width="100">&nbsp;城市</td>
+                        <td width="100" >浓度<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">变化率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;目标</td>
+                        <td width="100">完成率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">控制值<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">三年平均<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">难度评估<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                    </tr>
+                    <tr  v-if="code1 == '1'" v-for="info in infos2">
+                        <td width="100">&nbsp;{{info.sortId}}</td>
+                        <td width="100">&nbsp;{{info.simple_city_name}}</td>
+                        <td width="100">&nbsp;{{info.pm25}}</td>
+                        <td width="100">&nbsp;{{info.rateOfChange}}<!--<img src="up.png" style="display: inline-block;height: 18px">--></td>
+                        <td width="100">&nbsp;{{info.Pm25Target}}</td>
+                        <td width="100"title="完成率100%">&nbsp;{{infos.completion}}</td>
+                        <td width="100">&nbsp;{{info.controlVal}}</td>
+                        <td width="100">&nbsp;{{info.threeYearAvange}}</td>
+                        <td width="100">&nbsp;<!--<img src="hh.png" style="display: inline-block;height: 18px">-->{{info.difficultyAssesment}}</td>
+                    </tr>
+                    <tr v-if="code1 == '2' || code1 == '3'" v-for="chengshi in infos2">
+                        <td width="100">&nbsp;{{chengshi.sortId}}</td>
+                        <td width="100">&nbsp;{{chengshi.city_name}}</td>
+                        <td width="100">&nbsp;{{chengshi.composite_index}}</td>
+                        <td width="100">&nbsp;{{chengshi.pm25}}</td>
+                        <td width="100">&nbsp;{{chengshi.pm10}}</td>
+                        <td width="100">&nbsp;{{chengshi.so2}}</td>
+                        <td width="100">&nbsp;{{chengshi.no2}}</td>
+                        <td width="100">&nbsp;{{chengshi.co}}</td>
+                        <td width="100">&nbsp;{{chengshi.o3}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div style="height: 200px;">
+            <div style="width: 100%;height: 48px;border-bottom: 1px solid #aaa">
+                <div style="float: left">
+                    <span style="font-size: 30px;color: #f5f5f5">秋冬季PM<span style="font-size: 12px">2.5</span>变化率：16.8% <img src="img/bigdown.png" style="display: inline-block;height: 26px"></span>
+                </div>
+                <div style="float: right;padding-top: 15px;margin-right: 30px">
+                    <img src="img/heart.png" title="设置关心城市" style="cursor: pointer">
+                    <img src="img/placementUp.png" style="padding-left: 22px;cursor: pointer" title="置顶">
+                </div>
+            </div>
+
+            <div class="main-left" style="height: 200px;overflow-y:scroll;margin-top: 16px;width: 97%;">
+                <table style="font-size: 18px;color: #54a7d8">
+                    <tr>
+                        <td width="100">&nbsp;排序</td>
+                        <td width="100">&nbsp;城市</td>
+                        <td width="100">&nbsp;浓度</td>
+                        <td width="100">&nbsp;变化率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;目标<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;完成率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;控制值<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">&nbsp;三年平均<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                    </tr>
+                    <tr>
+                        <td width="100">&nbsp;&nbsp;114</td>
+                        <td width="100">&nbsp;&nbsp;石家庄</td>
+                        <td width="100">&nbsp;&nbsp;34</td>
+                        <td width="100">&nbsp;16.5%<img src="img/up.png" style="display: inline-block;height: 18px"></td>
+                        <td width="100">&nbsp;&nbsp;68</td>
+                        <td width="100" title="完成率100%">&nbsp;100%</td>
+                        <td width="100">&nbsp;&nbsp;17</td>
+                        <td width="100">&nbsp;&nbsp;90</td>
+                    </tr>
+                    <tr>
+                        <td width="100">&nbsp;&nbsp;1</td>
+                        <td width="100">&nbsp;&nbsp;泸州</td>
+                        <td width="100">&nbsp;&nbsp;24</td>
+                        <td width="100">&nbsp;16.5%<img src="img/up.png" style="display: inline-block;height: 18px"></td>
+                        <td width="100">&nbsp;&nbsp;48</td>
+                        <td width="100" title="完成率100%">&nbsp;100%</td>
+                        <td width="100">&nbsp;&nbsp;27</td>
+                        <td width="100">&nbsp;&nbsp;90</td>
+                    </tr>
+                    <tr>
+                        <td width="100">&nbsp;&nbsp;3</td>
+                        <td width="100">&nbsp;&nbsp;北京</td>
+                        <td width="100">&nbsp;&nbsp;34</td>
+                        <td width="100">&nbsp;16.5%<img src="img/down.png" style="display: inline-block;height: 18px"></td>
+                        <td width="100">&nbsp;&nbsp;68</td>
+                        <td width="100" title="完成率100%">&nbsp;100%</td>
+                        <td width="100">&nbsp;&nbsp;17</td>
+                        <td width="100">&nbsp;&nbsp;90</td>
+                    </tr>
+                    <tr>
+                        <td width="100">&nbsp;&nbsp;4</td>
+                        <td width="100">&nbsp;&nbsp;自贡</td>
+                        <td width="100">&nbsp;&nbsp;37</td>
+                        <td width="100">&nbsp;16.5%<img src="img/down.png" style="display: inline-block;height: 18px"></td>
+                        <td width="100">&nbsp;&nbsp;65</td>
+                        <td width="100" title="完成率100%">&nbsp;100%</td>
+                        <td width="100">&nbsp;&nbsp;14</td>
+                        <td width="100">&nbsp;&nbsp;90</td>
+                    </tr>
+                    <tr>
+                        <td width="100">&nbsp;&nbsp;5</td>
+                        <td width="100">&nbsp;&nbsp;福州</td>
+                        <td width="100">&nbsp;&nbsp;34</td>
+                        <td width="100">&nbsp;13.5%<img src="img/up.png" style="display: inline-block;height: 18px"></td>
+                        <td width="100">&nbsp;&nbsp;68</td>
+                        <td width="100" title="完成率100%">&nbsp;100%</td>
+                        <td width="100">&nbsp;&nbsp;17</td>
+                        <td width="100">&nbsp;&nbsp;90</td>
+                    </tr>
+                    <tr>
+                        <td width="100">&nbsp;&nbsp;4</td>
+                        <td width="100">&nbsp;&nbsp;自贡</td>
+                        <td width="100">&nbsp;&nbsp;37</td>
+                        <td width="100">&nbsp;15.5%<img src="img/up.png" style="display: inline-block;height: 18px"></td>
+                        <td width="100">&nbsp;&nbsp;65</td>
+                        <td width="100">&nbsp;&nbsp;14</td>
+                        <td width="100" title="完成率100%">&nbsp;100%</td>
+                        <td width="100">&nbsp;&nbsp;90</td>
+                    </tr>
+                    <tr>
+                        <td width="100">&nbsp;&nbsp;5</td>
+                        <td width="100">&nbsp;&nbsp;福州</td>
+                        <td width="100">&nbsp;&nbsp;34</td>
+                        <td width="100">&nbsp;14.5%<img src="img/down.png" style="display: inline-block;height: 18px"></td>
+                        <td width="100">&nbsp;&nbsp;68</td>
+                        <td width="100" title="完成率100%">&nbsp;100%</td>
+                        <td width="100">&nbsp;&nbsp;17</td>
+                        <td width="100">&nbsp;&nbsp;90</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--主体end-->
+
+</body>
+
+</html>
+
+<script src="js/vue-axios.min.js"></script>
+
+<script src="js/vue.min.js"></script>
+
+<script src="js/jquery-1.8.3.min.js"></script>
+
+<script>
+    var dispatch = new Vue({
+        el: '#dispatch',
+        data: {
+            infos:[],
+            infosmsg:'',
+            infos1:[],
+            infosmsg1:'',
+            infos2:[],
+            infosmsg2:'',
+            code:'',
+            code1:'',
+            code2:''
+        },
+        mounted: function(){
+            this.pingjie();
+        },
+        methods: {
+            /*
+            * 累计浓度  1
+            * 168   2
+            * 各县区  3
+            * */
+            pingjie: function(){
+                var that = this;
+                $.ajax({
+                    type: "POST",
+                    url: 'http://180.76.119.77:9096/api/indexSchduling/getIndexSchdulingAllData.action',//服务器
+                    // url: 'http://192.168.1.102:9093/indexSchduling/getIndexSchdulingAllData.action',//本地
+                    data: {"pid":130400,"aid":130400,"modelNum":1},
+                    success: function(data){
+                        that.infosmsg = data.data[0].msg;
+                        that.code = data.data[0].code;
+                        that.infos = data.data[0].data;
+
+                        that.infosmsg2 = data.data[1].msg;
+                        that.code1 = data.data[1].code;
+                        that.infos2 = data.data[1].data;
+
+                        that.infosmsg1 = data.data[2].msg;
+                        that.code2 = data.data[2].code;
+                        that.infos1 = data.data[2].data.CityYearAccData;
+                        console.log(that.code)
+                    }
+                })
+            },
+            //各县区
+            upAQI:function(){
+                var that = this;
+                $.ajax({
+                    type: "POST",
+                    sync: true,
+                    url: 'http://180.76.119.77:9096/api/indexSchduling/getIndexSchdulingAllData.action',//服务器
+                    // url: 'http://192.168.1.102:9093/indexSchduling/getIndexSchdulingAllData.action',//本地
+                    data: {"pid":130400,"aid":130400,"modelNum":3},
+                    success: function(data){
+                        that.infosmsg = data.data[0].msg;
+                        that.code = data.data[0].code;
+                        that.infos = data.data[0].data.CityYearAccData;
+
+                        that.infosmsg2 = data.data[1].msg;
+                        that.code1 = data.data[1].code;
+                        that.infos2 = data.data[1].data;
+
+                        that.infosmsg1 = data.data[2].msg;
+                        that.code2 = data.data[2].code;
+                        that.infos1 = data.data[2].data;
+                        console.log('各县区======',that.infos)
+                        // console.log(data.data[0])
+                    }
+                })
+
+            },
+            //168
+            upCity:function(){
+                var that = this;
+                $.ajax({
+                    type: "POST",
+                    sync: true,
+                    url: 'http://180.76.119.77:9096/api/indexSchduling/getIndexSchdulingAllData.action',//服务器
+                    // url: 'http://192.168.1.102:9093/indexSchduling/getIndexSchdulingAllData.action',//本地
+                    data: {"pid":130400,"aid":130400,"modelNum":2},
+                    success: function(data){
+                        that.infosmsg = data.data[0].msg;
+                        that.code = data.data[0].code;
+                        that.infos = data.data[0].data;
+
+                        that.infosmsg2 = data.data[1].msg;
+                        that.code1 = data.data[1].code;
+                        that.infos2 = data.data[1].data;
+
+                        that.infosmsg1 = data.data[2].msg;
+                        that.code2 = data.data[2].code;
+                        that.infos1 = data.data[2].data.CityYearAccData;
+                        console.log(that.code)
+                        // console.log(data.data[0])
+                        console.log('168======',that.infos)
+                    }
+                })
+
+            },
+            comprehensive:function(){
+                var that = this;
+                $.ajax({
+                    type: "POST",
+                    sync: true,
+                    url: 'http://180.76.119.77:9096/api/indexSchduling/getIndexSchdulingAllData.action',//服务器
+                    // url: 'http://192.168.1.102:9093/indexSchduling/getIndexSchdulingAllData.action',//本地
+                    data: {"pid":130400,"aid":130400,"modelNum":1},
+                    success: function(data){
+                        that.infosmsg = data.data[0].msg;
+                        that.infos = data.data[0].data;
+
+                        that.infosmsg1 = data.data[2].msg;
+                        that.infos1 = data.data[2].data.CityYearAccData;
+
+                        that.infosmsg2 = data.data[1].msg;
+                        that.infos2 = data.data[1].data;
+                        // console.log(data.data[0])
+                    }
+                })
+
+            },
+        }
+    });
+
+  $('#return_index').on('click',function () {
+    window.location.href= '../index.html'
+  })
+</script>
+
+<script>
+    $(function () {
+        $('.clickBag span:nth-child(1)').addClass('cur').siblings().removeClass('cur')
+        $('.clickBag span').click(function () {
+            $(this).addClass('cur').siblings().removeClass('cur')
+        });
+    });
+</script>
+
+
