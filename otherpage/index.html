@@ -31,7 +31,7 @@
 <body>
 <!--头部start-->
 <header class="header" style="">
-        <span style="" id="return_index">
+        <span style="" >
             <img src="img/logo.png" style="">
             大气环境AR实景调度决策
         </span>
@@ -90,7 +90,7 @@
                     <tr v-if="code == '1'">
                         <td width="100">&nbsp;排序</td>
                         <td  width="100">&nbsp;城市</td>
-                        <td  width="100" >浓度<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td  width="100" >浓度<img src="img/sort.png" style="display: inline-block;height: 14px" ></td>
                         <td  width="100">变化率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
                         <td  width="100">&nbsp;目标</td>
                         <td  width="100">完成率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
@@ -110,16 +110,16 @@
                         <td width="100">&nbsp;O<span style="font-size: 10px">3</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
                     </tr>
 
-                    <tr v-if="code == '1'" v-for="info in infos">
+                    <tr v-if="code == '1'" v-for="info in infos" >
                         <td width="100">&nbsp;{{info.sortId}}</td>
                         <td width="100">&nbsp;{{info.simple_city_name}}</td>
                         <td width="100">&nbsp;{{info.pm25}}</td>
                         <td width="100">&nbsp;{{info.rateOfChange}}<!--<img src="up.png" style="display: inline-block;height: 18px">--></td>
-                        <td width="100;text-align: center">&nbsp;{{info.Pm25Target}}</td>
-                        <td width="100" title="完成率100%">&nbsp;{{infos.completion}}</td>
+                        <td width="100;text-align: center">&nbsp;{{info.pm25Target}}</td>
+                        <td width="100" title="完成率100%">&nbsp;{{info.completion}}</td>
                         <td width="100">&nbsp;{{info.controlVal}}</td>
                         <td width="100">&nbsp;{{info.threeYearAvange}}</td>
-                        <td width="100">&nbsp;<!--<img src="hh.png" style="display: inline-block;height: 18px">-->{{info.difficultyAssesment}}</td>
+                        <td width="100">&nbsp;<!--<img src="hh.png" style="display: inline-block;height: 18px">-->{{info.difficultyAssessment}}</td>
                     </tr>
                     <tr v-if="code == '2'" v-for="gexian in infos">
                         <td width="100">&nbsp;{{gexian.sortId}}</td>
@@ -523,10 +523,6 @@
             },
         }
     });
-
-  $('#return_index').on('click',function () {
-    window.location.href= '../index.html'
-  })
 </script>
 
 <script>
@@ -537,5 +533,6 @@
         });
     });
 </script>
+
 
 
