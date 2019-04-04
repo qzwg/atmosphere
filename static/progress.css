@@ -11,7 +11,14 @@
 * and Edge, use the transform attribute directly on the SVG element as a
 * . workaround.
 */
-
+.circle-num {
+  font-family: 微软雅黑;
+  font-size: 36px;
+}
+.circle-text {
+  font-family: 微软雅黑;
+  font-size: 22px;
+}
 .circle-chart {
     width: 150px;
     height: 150px;

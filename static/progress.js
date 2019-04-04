@@ -29,10 +29,10 @@ function makesvg( inner_text){
     + '<circle class="circle-chart__circle '+classes+'"'
     + 'stroke-dasharray="'+ abs_percentage+',100"    cx="16.9" cy="16.9" r="15.9" />'
     + '<g class="circle-chart__info">'
-     + '   <text class="circle-chart__percent" x="16.9" y="11.5"  fill="#ddd">'+inner_text+'</text>';
+     + '   <text class="circle-chart__percent circle-num" x="16.9" y="11.5"  fill="#ddd">'+inner_text+'</text>';
     console.log(inner_text)
     if(inner_text){
-     svg += '<text class="circle-chart__percent" fill="#ddd" x="16.9" y="19.5">'+inner_text_title+'</text>'
+     svg += '<text class="circle-chart__percent circle-text" fill="#ddd" x="16.9" y="19.5">'+inner_text_title+'</text>'
       // svg += '   <text class="circle-chart__percent" x="17.9" y="15.5"  fill="#ddd">'+inner_text+'</text>'
     }
 
