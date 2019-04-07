@@ -13,11 +13,11 @@
 */
 .circle-num {
   font-family: 微软雅黑;
-  font-size: 36px;
+  font-size: 10px !important;
 }
 .circle-text {
   font-family: 微软雅黑;
-  font-size: 22px;
+  font-size: 8px !important;
 }
 .circle-chart {
     width: 150px;

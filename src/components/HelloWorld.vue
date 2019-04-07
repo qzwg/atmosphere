@@ -108,7 +108,7 @@
                 </ul>
               </div>
               <div id="_city_table_id" class="city_table">
-                <i-table :height="eleHeight"  width="10%" :columns="columns1" :data="data2"></i-table>
+                <i-table :height="eleHeight" no-data-text="" width="10%" :columns="columns1" :data="data2"></i-table>
 
               </div>
             </div>
@@ -271,13 +271,13 @@
             <div class="col-xs-6"></div>
             <div class="col-xs-6 whpadding">
               <ol class="right_ol">
-                <li class="airtype right_ol_liFocus">AQI</li>
-                <li class="airtype">PM<span class="whsub">2.5</span></li>
-                <li class="airtype">PM<span class="whsub">10</span></li>
-                <li class="airtype">O<span class="whsub">3</span>(8h)</li>
-                <li class="airtype">CO</li>
-                <li class="airtype">NO<span class="whsub">2</span></li>
-                <li class="airtype">SO<span class="whsub">2</span></li>
+                <li class="airtype right_ol_liFocus" data-type="aqi">AQI</li>
+                <li class="airtype" data-type="pm25">PM<span class="whsub">2.5</span></li>
+                <li class="airtype" data-type="pm10">PM<span class="whsub">10</span></li>
+                <li class="airtype" data-type="o3">O<span class="whsub">3</span>(8h)</li>
+                <li class="airtype" data-type="co">CO</li>
+                <li class="airtype" data-type="no2">NO<span class="whsub">2</span></li>
+                <li class="airtype" data-type="so2">SO<span class="whsub">2</span></li>
                 <li class="moveto" onclick="moveTo('西安')">全国</li>
                 <li class="moveto" onclick="moveTo('北京')">京津翼</li>
                 <li class="moveto" onclick="moveTo('石家庄')">2+26</li>
@@ -761,6 +761,7 @@
   import {Table} from  'iview'
   import $ from 'jquery'
   Vue.component('i-table', Table);
+  var httpUrl = 'http://180.76.119.77:9096'
   export default {
     data () {
       return {
@@ -768,7 +769,7 @@
         columns1: [
           {
             title: '排名',
-            key: 'rank',
+            type: 'index',
             align:'center',
             width:'30'
           },
@@ -864,64 +865,7 @@
             }
           }
         ],
-        data2: [
-          {
-            cityName: '郑州',
-            rank: 1,
-            AQI: '15',
-            PM25: '23',
-            PM10: '17',
-            O3: '19',
-            CO: '15',
-            NO2: '49',
-            SO2: '39',
-          },
-          {
-            cityName: '许昌',
-            rank: 2,
-            AQI: '35',
-            PM25: '53',
-            PM10: '27',
-            O3: '49',
-            CO: '17',
-            NO2: '43',
-            SO2: '89',
-          },
-          {
-            cityName: '平顶山你',
-            rank: 3,
-            AQI: '189',
-            PM25: '53',
-            PM10: '27',
-            O3: '15',
-            CO: '65',
-            NO2: '99',
-            SO2: '29',
-          },
-          {
-            cityName: '驻马店',
-            rank: 4,
-            AQI: '89',
-            PM25: '53',
-            PM10: '27',
-            O3: '15',
-            CO: '65',
-            NO2: '99',
-            SO2: '29',
-          },
-          {
-            cityName: '信阳',
-            rank: 5,
-            AQI: '89',
-            PM25: '53',
-            PM10: '27',
-            O3: '15',
-            CO: '65',
-            NO2: '99',
-            SO2: '29',
-          },
-
-        ]
+        data2: []
       }
     },
     components: {
@@ -929,8 +873,160 @@
     },
     mounted (){
       this.eleHeight = $('#_city_table_id').height()+5
+      var that = this
+// 左下角城市排名 -- 排名范围切换
+      $(".city_sort_change li").click(function () {
+        $(".city_sort_change li").each(function (item) {
+          if($(this).hasClass('liFocus')) {
+            $(this).removeClass('liFocus')
+          }
+        })
+        $(this).addClass('liFocus')
+        that.getCityRank()
+        let city_sort = $(this).text();
+        console.log("城市排名范围切换：" + city_sort);
+      })
+
+// 左下角城市排名 -- 时间类型切换
+
+      $(".city_time_change li").click(function () {
+        let city_sort = $(".city_sort_change .liFocus").text();
+        let city_time = $(this).text();
+        $(".city_time_change li").each(function (item) {
+          if($(this).hasClass('liFocus')) {
+            $(this).removeClass('liFocus')
+          }
+        })
+        $(this).addClass('liFocus')
+        that.getCityRank()
+        console.log("=========================")
+        console.log("城市排名范围切换：" + city_sort);
+        console.log("城市排名时间类型切换：" + city_time)
+        console.log("=========================")
+      })
+      this.getCityRank()
     },
     methods:{
+      getCityRank () {
+        var dd = $(".city_sort_change .liFocus").text()
+        console.log(dd)
+        var modelNum = ''
+        if (dd == '169') {
+          modelNum = '2'
+        }else if(dd == '2+26') {
+          modelNum ='1'
+        }else if(dd == '省') {
+          modelNum ='4'
+        }else if(dd == '县') {
+          modelNum ='3'
+        }
+        var sort = '1'
+        var  timedd =  $(".city_time_change .liFocus").text()
+        var Num = ''
+        if(timedd == '时') {
+          Num ='1'
+        }else if(timedd == '日') {
+          Num ='2'
+        }else if(timedd == '月') {
+          Num ='3'
+        }else if(timedd == '年') {
+          Num ='4'
+        }
+
+        var that =  this
+        $.ajax({
+          type: "get",
+          url: httpUrl+'/api/getIndexAllPortData?modelNum='+modelNum+'&sort='+sort+'&Num='+Num,//服务器
+          success: function(data){
+            if (Num == '1') {
+              if(data.code =='200') {
+                if(data.data[0].code == '200'){
+                  var hourData = data.data[0].data.HourData
+                  var tmpData=[]
+                  for (var i in hourData) {
+                    tmpData.push(
+                      {
+                        cityName: hourData[i].area_name,
+                        AQI: hourData[i].aqi,
+                        PM25: hourData[i].pm25,
+                        PM10: hourData[i].pm10,
+                        O3: hourData[i].o3,
+                        CO: hourData[i].co,
+                        NO2: hourData[i].no2,
+                        SO2: hourData[i].so2
+                      })
+                  }
+                  that.data2=tmpData
+                }
+              }
+            } else if(Num == '2') {
+              if(data.code =='200') {
+                if(data.data[0].code == '200'){
+                  var hourData = data.data[0].data.DayData
+                  var tmpData=[]
+                  for (var i in hourData) {
+                    tmpData.push(
+                      {
+                        cityName: hourData[i].area_name,
+                        AQI: hourData[i].aqi,
+                        PM25: hourData[i].pm25,
+                        PM10: hourData[i].pm10,
+                        O3: hourData[i].o3,
+                        CO: hourData[i].co,
+                        NO2: hourData[i].no2,
+                        SO2: hourData[i].so2
+                      })
+                  }
+                  that.data2=tmpData
+                }
+              }
+            }else if(Num == '3') {
+              if(data.code =='200') {
+                if(data.data[0].code == '200'){
+                  var hourData = data.data[0].data.MonthData
+                  var tmpData=[]
+                  for (var i in hourData) {
+                    tmpData.push(
+                      {
+                        cityName: hourData[i].area_name,
+                        AQI: hourData[i].aqi,
+                        PM25: hourData[i].pm25,
+                        PM10: hourData[i].pm10,
+                        O3: hourData[i].o3,
+                        CO: hourData[i].co,
+                        NO2: hourData[i].no2,
+                        SO2: hourData[i].so2
+                      })
+                  }
+                  that.data2=tmpData
+                }
+              }
+            }else if(Num == '4'){
+              if(data.code =='200') {
+                if(data.data[0].code == '200'){
+                  var hourData = data.data[0].data.YearList
+                  var tmpData=[]
+                  for (var i in hourData) {
+                    tmpData.push(
+                      {
+                        cityName: hourData[i].area_name,
+                        AQI: hourData[i].aqi,
+                        PM25: hourData[i].pm25,
+                        PM10: hourData[i].pm10,
+                        O3: hourData[i].o3,
+                        CO: hourData[i].co,
+                        NO2: hourData[i].no2,
+                        SO2: hourData[i].so2
+                      })
+                  }
+                  that.data2=tmpData
+                }
+              }
+            }
+            console.log(that.code)
+          }
+        })
+      },
       details_updown(type){
         console.log("fff");
         var that = this
@@ -973,6 +1069,7 @@
   }
 
 </script>
+
 <style>
 
   .ivu-table {

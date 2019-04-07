@@ -1,25 +1,3 @@
-
-Date.prototype.format = function(fmt) {
-  var o = {
-    "M+" : this.getMonth()+1,                 //月份
-    "d+" : this.getDate(),                    //日
-    "h+" : this.getHours(),                   //小时
-    "m+" : this.getMinutes(),                 //分
-    "s+" : this.getSeconds(),                 //秒
-    "q+" : Math.floor((this.getMonth()+3)/3), //季度
-    "S"  : this.getMilliseconds()             //毫秒
-  };
-  if(/(y+)/.test(fmt)) {
-    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
-  }
-  for(var k in o) {
-    if(new RegExp("("+ k +")").test(fmt)){
-      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
-    }
-  }
-  return fmt;
-}
-
 // // 初始化模板选择的下拉框
 // var sel = document.getElementById('stylelist');
 // for (var key in mapstyles) {
@@ -167,7 +145,62 @@ map.addEventListener("tilesloaded",
     })
 
 
-var data_info = []
+var data_info = [
+    [111.181262093, 34.7833199411, "河南省-三门峡市"],
+    [114.085490993, 32.1285823075, "河南省-信阳市"],
+    [112.542841901, 33.0114195691, "河南省-南阳市"],
+    [114.654101942, 33.6237408181, "河南省-周口市"],
+    [115.641885688, 34.4385886402, "河南省-商丘市"],
+    [114.351806508, 36.1102667222, "河南省-安阳市"],
+    [113.300848978, 33.7453014565, "河南省-平顶山市"],
+    [114.351642118, 34.8018541758, "河南省-开封市"],
+    [113.912690161, 35.3072575577, "河南省-新乡市"],
+    [112.447524769, 34.6573678177, "河南省-洛阳市"],
+    [114.0460614, 33.5762786885, "河南省-漯河市"],
+    [115.026627441, 35.7532978882, "河南省-濮阳市"],
+    [113.211835885, 35.234607555, "河南省-焦作市"],
+    [113.486804058, 34.157183768, "河南省-省直辖"],
+    [113.83531246, 34.0267395887, "河南省-许昌市"],
+    [113.64964385, 34.7566100641, "河南省-郑州市"],
+    [114.049153547, 32.9831581541, "河南省-驻马店市"],
+    [114.297769838, 35.7554258742, "河南省-鹤壁市"],
+    [104.776071339, 29.3591568895, "四川省-自贡市"],
+    [104.635930302, 30.132191434, "四川省-资阳市"],
+    [107.494973447, 31.2141988589, "四川省-达州市"],
+    [105.564887792, 30.5574913504, "四川省-遂宁市"],
+    [102.228564689, 31.9057628583, "四川省-阿坝藏族羌族自治州"],
+    [103.009356466, 29.9997163371, "四川省-雅安市"],
+    [117.210813092, 39.1439299033, "天津-天津市"],
+    [105.196754199, 37.5211241916, "宁夏回族自治区-中卫市"],
+    [106.208254199, 37.9935610029, "宁夏回族自治区-吴忠市"],
+    [106.285267996, 36.0215234807, "宁夏回族自治区-固原市"],
+    [106.379337202, 39.0202232836, "宁夏回族自治区-石嘴山市"],
+    [106.206478608, 38.5026210119, "宁夏回族自治区-银川市"],
+    [115.787928245, 33.8712105653, "安徽省-亳州市"],
+    [116.505252683, 31.7555583552, "安徽省-六安市"],
+    [117.282699092, 31.8669422607, "安徽省-合肥市"],
+    [117.058738772, 30.5378978174, "安徽省-安庆市"],
+    [118.752096311, 30.9516423543, "安徽省-宣城市"],
+    [115.820932259, 32.9012113306, "安徽省-阜阳市"],
+    [118.515881847, 31.6885281589, "安徽省-马鞍山市"],
+    [118.293569632, 29.7344348562, "安徽省-黄山市"],
+    [118.583926333, 37.4871211553, "山东省-东营市"],
+    [118.340768237, 35.0724090744, "山东省-临沂市"],
+    [122.093958366, 37.5287870813, "山东省-威海市"],
+    [116.328161364, 37.4608259263, "山东省-德州市"],
+    [119.507179943, 35.4202251931, "山东省-日照市"],
+    [110.931245331, 21.6682257188, "广东省-茂名市"],
+    [111.977009756, 21.8715173045, "广东省-阳江市"],
+    [113.594461107, 24.8029603119, "广东省-韶关市"],
+    [109.122627919, 21.472718235, "广西壮族自治区-北海市"],
+    [108.297233556, 22.8064929356, "广西壮族自治区-南宁市"],
+    [107.357322038, 22.4154552965, "广西壮族自治区-崇左市"],
+    [119.173872217, 34.601548967, "江苏省-连云港市"],
+    [119.455835405, 32.2044094436, "江苏省-镇江市"],
+    [117.955463877, 28.4576225539, "江西省-上饶市"],
+    [115.999848022, 29.7196395261, "江西省-九江市"],
+    [115.893527546, 28.6895780001, "江西省-南昌市"]
+]
 
 var opts = {
     width: 400, // 信息窗口宽度
@@ -176,65 +209,24 @@ var opts = {
     enableMessage: true, //设置允许信息窗发送短息
 };
 var httpUrl = 'http://180.76.119.77:9096'
-function getDataRealTimeInfoList() {
+function getDataInfoList() {
   $.ajax({
     type: "get",
-    url:'/static/currentMapData.json',//服务器
-    async: false,
+    url: httpUrl+'/api/currentMapData',//服务器
     success: function(data){
         if(data.code == '200') {
-          data_info =[]
           for(var i in data.data) {
-            //[111.181262093, 34.7833199411, "河南省-三门峡市"]
-            var date_str = new Date(data.data[i].data_real_time).format("yyyy-MM-dd")
-            data_info.push([
-              data.data[i].longitude,data.data[i].latitude,data.data[i].name,
-              data.data[i].aqi,data.data[i].pm25,data.data[i].pm10,data.data[i].o3,
-              data.data[i].co,data.data[i].no2,data.data[i].so2,
-              date_str,data.data[i].composite_index,
-            ])
+            data_info.push()
           }
       }
-      console.log(data_info)
+
     }
   })
-}
-function getDataTotalInfoList() {
-  $.ajax({
-    type: "get",
-    url:'/static/cumMapData.json',//服务器
-    async: false,
-    success: function(data){
-        if(data.code == '200') {
-          data_info =[]
-          for(var i in data.data) {
-            //[111.181262093, 34.7833199411, "河南省-三门峡市"]
-            var date_str = new Date(data.data[i].data_real_time).format("yyyy-MM-dd")
-            data_info.push([
-              data.data[i].longitude,data.data[i].latitude,data.data[i].name,
-              data.data[i].aqi,data.data[i].pm25,data.data[i].pm10,data.data[i].o3,
-              data.data[i].co,data.data[i].no2,data.data[i].so2,
-              date_str,data.data[i].composite_index,
-            ])
-          }
-      }
-      console.log(data_info)
-    }
-  })
-}
-var isRealTime =  $(".li.rightliFocus").text() == '实况' ?true:false
-if(isRealTime) {
-  getDataRealTimeInfoList()
-} else {
-  getDataTotalInfoList()
 }
 
 function map_init() {
 
-  var type_param = $(".airtype.right_ol_liFocus").data('type')
-  console.log(type_param)
-
-    for (var i = 0; i < 200; i++) {
+    for (var i = 0; i < data_info.length; i++) {
         var marker = new BMap.Marker(new BMap.Point(data_info[i][0], data_info[i][1])); // 创建标注
         var content = '';
         content += '<div class="window_info " style="width: 380px;border-radius:5px;overflow: hidden;padding: 10px 0;border: 1px solid rgb(2,161,231);background-color: rgb(8,46,83);color: #fff">';
@@ -244,19 +236,19 @@ function map_init() {
         content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 8px">';
         content += '<div class=" dark dark_num">';
         content += '<div class="" style="height: 3vh;line-height: 3vh;font-size: 1vh">' + data_info[i][2] + '</div>';
-        content += '<div class="" style="height: 3vh;line-height: 3vh;">' + data_info[i][10] + '</div>';
+        content += '<div class="" style="height: 3vh;line-height: 3vh;">2019-02-13 13:00</div>';
         content += '</div>';
         content += '</div>';
         content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 4px">';
         content += '<div class=" dark">';
         content += '<div class="bgorange" style="height: 3vh;line-height: 3vh;">AQI</div>';
-        content += '<div class="window_num dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][3] +'</div>';
+        content += '<div class="window_num dark_num" style="height: 3vh;line-height: 3vh;">105</div>';
         content += '</div>';
         content += '</div>';
         content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 8px">';
         content += '<div class=" dark">';
         content += '<div class="bgorange" style="height: 3vh;line-height: 3vh;">综合指数</div>';
-        content += '<div class="window_num dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][11] +'</div>';
+        content += '<div class="window_num dark_num" style="height: 3vh;line-height: 3vh;">5.83</div>';
         content += '</div>';
         content += '</div>';
         content += '</div>';
@@ -265,13 +257,13 @@ function map_init() {
         content += '<div class="col-xs-6 dark " style="height: 6vh;padding-right: 3px">';
         content += '<div style="">';
         content += '<div class=" bgorange" style="height: 3vh;line-height: 3vh;">PM2.5</div>';
-        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][4] +'</div>';
+        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">79</div>';
         content += '</div>';
         content += '</div>';
         content += '<div class="col-xs-6 dark " style="height: 6vh;padding-left: 3px;>';
         content += '<div style="">';
         content += '<div class=" bgyellow" style="height: 3vh;line-height: 3vh;">PM10</div>';
-        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][5] +'</div>';
+        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">99</div>';
         content += '</div>';
         // content += '</div>';
         content += '</div>';
@@ -279,13 +271,13 @@ function map_init() {
         content += '<div class="col-xs-6 dark" style="height: 6vh;padding-right: 3px">';
         content += '<div style="">';
         content += '<div class=" bggreen" style="height: 3vh;line-height: 3vh;">SO2</div>';
-        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][9] +'</div>';
+        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">10</div>';
         content += '</div>';
         content += '</div>';
         content += '<div class="col-xs-6 dark " style="height: 6vh;padding-left: 3px">';
         content += '<div style="">';
         content += '<div class=" bgyellow" style="height: 3vh;line-height: 3vh;">NO2</div>';
-        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][8] +'</div>';
+        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">46</div>';
         content += '</div>';
         content += '</div>';
         content += '</div>';
@@ -293,13 +285,13 @@ function map_init() {
         content += '<div class="col-xs-6 dark" style="height: 6vh;padding-right: 3px">';
         content += '<div style="">';
         content += '<div class=" bggreen" style="height: 3vh;line-height: 3vh;">CO</div>';
-        content += '<div class=" dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][7] +'</div>';
+        content += '<div class=" dark_num" style="height: 3vh;line-height: 3vh;">0.7</div>';
         content += '</div>';
         content += '</div>';
         content += '<div class="col-xs-6 dark" style="height: 6vh;padding-left: 3px">';
         content += '<div style="">';
         content += '<div class=" bggreen" style="height: 3vh;line-height: 3vh;">O3</div>';
-        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][6] +'</div>';
+        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">34</div>';
         content += '</div>';
         content += '</div>';
         content += '</div>';
@@ -358,24 +350,7 @@ function map_init() {
         if (info_show) {
             let label_content = '';
             label_content += '<div class="point">';
-
-             var type_num = 3
-            if(type_param == 'aqi') {
-              type_num = 3
-            } else  if(type_param == 'pm25') {
-              type_num = 4
-            } else  if(type_param == 'pm10') {
-              type_num = 5
-            } else  if(type_param == 'o3') {
-              type_num = 6
-            } else  if(type_param == 'co') {
-              type_num = 7
-            } else  if(type_param == 'no2') {
-              type_num = 8
-            } else  if(type_param == 'so2') {
-              type_num = 9
-            }
-            label_content += '<div style="background-color:' + color + ' " class="point_num">' + data_info[i][type_num] + '</div>';
+            label_content += '<div style="background-color:' + color + ' " class="point_num">' + Math.floor(Math.random() * 200) + '</div>';
             label_content += '<div style="border-top-color: ' + color + ' "  class="point_arrow"></div>';
             label_content += '<div class="point_name"><span style="padding: 2px 5px;border-radius:3px;background-color: #fff;">' + data_info[i][2].substring(data_info[i][2].indexOf("-") + 1, data_info[i][2].length - 1) + '</span></div>';
             label_content += '</div>';
@@ -687,20 +662,12 @@ function openInfo(content, e) {
 $(".content_left_bottom ul li,.content_left_bottom ol li").click(function () {
     $(this).addClass("liFocus");
     $(this).siblings().removeClass("liFocus");
-
 })
 
 // 右侧类型切换
 $(".right_sort_change .li").click(function () {
     $(this).addClass("rightliFocus");
     $(this).siblings().removeClass("rightliFocus");
-    if($(this).text() == '实况') {
-      getDataRealTimeInfoList()
-
-    } else {
-      getDataTotalInfoList()
-    }
-   map_init()
 })
 
 $("#changeCity").click(function () {
@@ -812,7 +779,6 @@ $(".right_ol .airtype").click(function () {
     console.log("状态切换--" + type);
     $(this).addClass("right_ol_liFocus");
     $(this).siblings('.airtype').removeClass("right_ol_liFocus");
-  map_init()
 })
 // 右侧类型切换 -- PM2.5、AQI等切换
 $(".right_ol .moveto").click(function () {
