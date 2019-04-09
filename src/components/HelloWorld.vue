@@ -93,8 +93,8 @@
                 <ul class="city_sort_change">
                   <li class="liFocus">169</li>
                   <li>2+26</li>
-                  <li>省</li>
-                  <li>县</li>
+                  <li>省内</li>
+                  <li>县区</li>
                 </ul>
               </div>
             </div>

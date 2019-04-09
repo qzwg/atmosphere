@@ -178,7 +178,7 @@ var opts = {
 var httpUrl = 'http://180.76.119.77:9096'
 function getDataRealTimeInfoList() {
   $.ajax({
-    type: "get",
+    type: "get",//'/static/currentMapData.json'   '/api/currentMapData'
     url:'/static/currentMapData.json',//服务器
     async: false,
     success: function(data){
@@ -228,156 +228,227 @@ if(isRealTime) {
 } else {
   getDataTotalInfoList()
 }
+function getAqiColorByNum (num) {
+  var color =''
+  if (0<= num &&  num <= 50)  {
+    color = '#43ce17'
+  }else if(50< num &&  num <= 100) {
+    color = '#ddd72c'
+  }else if(100< num &&  num <= 150) {
+    color = '#e7a423'
+  }else if(150< num &&  num <= 200) {
+    color = '#ef6c19'
+  }else if(200< num &&  num <= 300) {
+    color = '#f7310f'
+  }else {
+    color = '#a7134c'
+  }
+  return color
+}
+function getPM25ColorByNum (num) {
+  var color =''
+  if (0<= num &&  num <= 35)  {
+    color = '#43ce17'
+  }else if(35< num &&  num <= 75) {
+    color = '#ddd72c'
+  }else if(75< num &&  num <= 115) {
+    color = '#e7a423'
+  }else if(115< num &&  num <= 150) {
+    color = '#ef6c19'
+  }else if(150< num &&  num <= 250) {
+    color = '#f7310f'
+  }else {
+    color = '#a7134c'
+  }
+  return color
+}
+function getPM10ColorByNum (num) {
+  var color =''
+  if (0<= num &&  num <= 50)  {
+    color = '#43ce17'
+  }else if(50< num &&  num <= 150) {
+    color = '#ddd72c'
+  }else if(150< num &&  num <= 250) {
+    color = '#e7a423'
+  }else if(250< num &&  num <= 350) {
+    color = '#ef6c19'
+  }else if(350< num &&  num <= 420) {
+    color = '#f7310f'
+  }else {
+    color = '#a7134c'
+  }
+  return color
+}
+function geto3ColorByNum (isRealTime,num) {
+  var color =''
+  if(isRealTime) {
+    if (0<= num &&  num <= 160)  {
+      color = '#43ce17'
+    }else if(160< num &&  num <= 200) {
+      color = '#ddd72c'
+    }else if(200< num &&  num <= 300) {
+      color = '#e7a423'
+    }else if(300< num &&  num <= 400) {
+      color = '#ef6c19'
+    }else if(400< num &&  num <= 800) {
+      color = '#f7310f'
+    }else {
+      color = '#a7134c'
+    }
+  } else {
+    if (0<= num &&  num <= 100)  {
+      color = '#43ce17'
+    }else if(100< num &&  num <= 160) {
+      color = '#ddd72c'
+    }else if(160< num &&  num <= 215) {
+      color = '#e7a423'
+    }else if(215< num &&  num <= 265) {
+      color = '#ef6c19'
+    }else if(265< num &&  num <= 800) {
+      color = '#f7310f'
+    }else {
+      color = '#a7134c'
+    }
+  }
 
+  return color
+}
+function getcoColorByNum (isRealTime,num) {
+  var color =''
+  if(isRealTime) {
+    if (0<= num &&  num <= 5)  {
+      color = '#43ce17'
+    }else if(5< num &&  num <= 10) {
+      color = '#ddd72c'
+    }else if(10< num &&  num <= 35) {
+      color = '#e7a423'
+    }else if(35< num &&  num <= 60) {
+      color = '#ef6c19'
+    }else if(60< num &&  num <= 90) {
+      color = '#f7310f'
+    }else {
+      color = '#a7134c'
+    }
+  } else {
+    if (0<= num &&  num <= 2)  {
+      color = '#43ce17'
+    }else if(2< num &&  num <= 4) {
+      color = '#ddd72c'
+    }else if(4< num &&  num <= 14) {
+      color = '#e7a423'
+    }else if(14< num &&  num <= 24) {
+      color = '#ef6c19'
+    }else if(24< num &&  num <= 36) {
+      color = '#f7310f'
+    }else {
+      color = '#a7134c'
+    }
+  }
+  return color
+}
+
+function getno2ColorByNum (isRealTime,num) {
+  var color =''
+  if(isRealTime) {
+    if (0<= num &&  num <= 100)  {
+      color = '#43ce17'
+    }else if(100< num &&  num <= 200) {
+      color = '#ddd72c'
+    }else if(200< num &&  num <= 700) {
+      color = '#e7a423'
+    }else if(700< num &&  num <= 1200) {
+      color = '#ef6c19'
+    }else if(1200< num &&  num <= 2340) {
+      color = '#f7310f'
+    }else {
+      color = '#a7134c'
+    }
+  } else {
+    if (0<= num &&  num <= 40)  {
+      color = '#43ce17'
+    }else if(40< num &&  num <= 80) {
+      color = '#ddd72c'
+    }else if(80< num &&  num <= 180) {
+      color = '#e7a423'
+    }else if(180< num &&  num <= 280) {
+      color = '#ef6c19'
+    }else if(280< num &&  num <= 565) {
+      color = '#f7310f'
+    }else {
+      color = '#a7134c'
+    }
+  }
+
+  return color
+}
+function getso2ColorByNum (isRealTime,num) {
+  var color =''
+  if(isRealTime) {
+    if (0<= num &&  num <= 150)  {
+      color = '#43ce17'
+    }else if(150< num &&  num <= 500) {
+      color = '#ddd72c'
+    }else if(500< num &&  num <= 650) {
+      color = '#e7a423'
+    }else if(650< num &&  num <= 800) {
+      color = '#ef6c19'
+    }else {
+      color = '#a7134c'
+    }
+  } else {
+    if (0<= num &&  num <= 50)  {
+      color = '#43ce17'
+    }else if(50< num &&  num <= 150) {
+      color = '#ddd72c'
+    }else if(150< num &&  num <= 475) {
+      color = '#e7a423'
+    }else if(475< num &&  num <= 800) {
+      color = '#ef6c19'
+    }else {
+      color = '#a7134c'
+    }
+  }
+  return color
+}
 function map_init() {
 
   var type_param = $(".airtype.right_ol_liFocus").data('type')
   console.log(type_param)
-
+  var isRealTime =  $(".li.rightliFocus").text() == '实况' ?true:false
     for (var i = 0; i < 200; i++) {
-        var marker = new BMap.Marker(new BMap.Point(data_info[i][0], data_info[i][1])); // 创建标注
-        var content = '';
-        content += '<div class="window_info " style="width: 380px;border-radius:5px;overflow: hidden;padding: 10px 0;border: 1px solid rgb(2,161,231);background-color: rgb(8,46,83);color: #fff">';
-        content += '<div class="col-xs-12" style="height: 3vh;line-height: 3vh;font-size: 2vh;">城市详情<span class="pull-right cityInfo_close" onclick="map.closeInfoWindow()" style="margin-top:-10px;margin-right:-5px;font-size: 18px">×</span></div>';
-        content += '<div class="text-center">';
-        content += '<div class="transborder" style="overflow: hidden;height: 6.5vh">';
-        content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 8px">';
-        content += '<div class=" dark dark_num">';
-        content += '<div class="" style="height: 3vh;line-height: 3vh;font-size: 1vh">' + data_info[i][2] + '</div>';
-        content += '<div class="" style="height: 3vh;line-height: 3vh;">' + data_info[i][10] + '</div>';
-        content += '</div>';
-        content += '</div>';
-        content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 4px">';
-        content += '<div class=" dark">';
-        content += '<div class="bgorange" style="height: 3vh;line-height: 3vh;">AQI</div>';
-        content += '<div class="window_num dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][3] +'</div>';
-        content += '</div>';
-        content += '</div>';
-        content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 8px">';
-        content += '<div class=" dark">';
-        content += '<div class="bgorange" style="height: 3vh;line-height: 3vh;">综合指数</div>';
-        content += '<div class="window_num dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][11] +'</div>';
-        content += '</div>';
-        content += '</div>';
-        content += '</div>';
-        content += '<div class="" style="margin-top: 5px;overflow: hidden">';
-        content += '<div class="col-xs-4  transborder" style="height: 6.5vh;padding: 0 8px">';
-        content += '<div class="col-xs-6 dark " style="height: 6vh;padding-right: 3px">';
-        content += '<div style="">';
-        content += '<div class=" bgorange" style="height: 3vh;line-height: 3vh;">PM2.5</div>';
-        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][4] +'</div>';
-        content += '</div>';
-        content += '</div>';
-        content += '<div class="col-xs-6 dark " style="height: 6vh;padding-left: 3px;>';
-        content += '<div style="">';
-        content += '<div class=" bgyellow" style="height: 3vh;line-height: 3vh;">PM10</div>';
-        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][5] +'</div>';
-        content += '</div>';
-        // content += '</div>';
-        content += '</div>';
-        content += '<div class="col-xs-4 transborder" style="height: 6.5vh;padding: 0 4px">';
-        content += '<div class="col-xs-6 dark" style="height: 6vh;padding-right: 3px">';
-        content += '<div style="">';
-        content += '<div class=" bggreen" style="height: 3vh;line-height: 3vh;">SO2</div>';
-        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][9] +'</div>';
-        content += '</div>';
-        content += '</div>';
-        content += '<div class="col-xs-6 dark " style="height: 6vh;padding-left: 3px">';
-        content += '<div style="">';
-        content += '<div class=" bgyellow" style="height: 3vh;line-height: 3vh;">NO2</div>';
-        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][8] +'</div>';
-        content += '</div>';
-        content += '</div>';
-        content += '</div>';
-        content += '<div class="col-xs-4 transborder" style="height: 6.5vh;padding: 0 8px">';
-        content += '<div class="col-xs-6 dark" style="height: 6vh;padding-right: 3px">';
-        content += '<div style="">';
-        content += '<div class=" bggreen" style="height: 3vh;line-height: 3vh;">CO</div>';
-        content += '<div class=" dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][7] +'</div>';
-        content += '</div>';
-        content += '</div>';
-        content += '<div class="col-xs-6 dark" style="height: 6vh;padding-left: 3px">';
-        content += '<div style="">';
-        content += '<div class=" bggreen" style="height: 3vh;line-height: 3vh;">O3</div>';
-        content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][6] +'</div>';
-        content += '</div>';
-        content += '</div>';
-        content += '</div>';
-        content += '</div>';
-        content += '</div>';
-        content += '<div style="height: 6.5vh;margin-top: 5px;" class="text-center">';
-        content += '<div class="col-xs-4 " style="height: 6vh;padding: 0 8px">';
-        content += '<div class=" dark dark_num" style="height: 6vh;line-height: 6vh;font-size: 2vh"><i class="fa fa-thermometer-three-quarters"></i> 11.9℃</div>';
-        content += '</div>';
-        content += '<div class="col-xs-4 " style="height: 6vh;padding: 0 4px">';
-        content += ' <div class="" >';
-        content += ' <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-tint"></i> 湿度 47.5%</div>';
-        content += ' <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-signal"></i> 风速 14km/h</div>';
-        content += ' </div>';
-        content += ' </div>';
-        content += ' <div class="col-xs-4 " style="height: 6vh;padding: 0 8px">';
-        content += '  <div class="">';
-        content += '  <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-send-o"></i> 风向东北</div>';
-        content += ' <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-superpowers"></i> 风力 1级</div>';
-        content += ' </div>';
-        content += '  </div>';
-        content += '  </div>';
-        content += '  <div style="height:15px;line-height:15px;text-align:center">最近及未来二十四小时AQI变化曲线</div>';
-        content += '  <div style="height: 10.5vh;margin-top: 5px;" class="text-center">';
-       content+='<div class="col-xs-12" style="width: 90%;float: right;margin-right:2%;border-top: 1px solid #aaa;position: relative">'
-        content += '<span style="position: absolute;left: -28px;top: -10px;z-index: 999999999;background-color: rgb(8,46,83)">120 </span>'
-        content += '<span style="position: absolute;left: 26.5%;top:0;z-index: 999999999;">历史</span>'
-        content += '<span style="position: absolute;left: 76%;top:0;z-index: 999999999;">预测</span>'
-       content+= ' </div>'
-        content += ' <div class="col-xs-12 " style="height: 8vh;padding-top: 15px;position:relative">';
-        content+='<div style="position:absolute;width:30%;right:4%;z-index:99999999;bottom:0;height:8vh;background-color:rgba(255,255,255,0.1)"></div>'
-        content += '  <div class="col-xs-8" style="padding:0;height: 8vh;line-height: 8vh;padding-left: 10px" id="main1"></div>';
-        content += '  <div class="col-xs-4" style="padding:0;height: 8vh;line-height: 8vh;" id="main2"></div>';
-        content += '  </div>';
-        content+='<div class="col-xs-12" style="width: 90%;float: right;margin-right:2%;border-bottom: 1px solid #aaa;position: relative">'
-        content+='<div class="col-xs-12" style="height:5px;overflow:hidden;position: absolute">'
-        content += '<span style="position: absolute;left: 11.5%;top: -10px;z-index: 99999;">|</span>'
-        content += ' <span style="position: absolute;left: 40%;top: -10px;z-index: 99999;">|</span>'
-        content += ' <span style="position: absolute;left: 75.5%;top:-10px;z-index: 99999;">|</span>'
-        content+= ' </div>'
-        content += ' <span style="position: absolute;left: -28px;top: -10px;z-index: 999999999;">&nbsp;&nbsp;0</span>'
-        content += '<span style="position: absolute;left: 11%;top: 2px;z-index: 999999999;">02-14</span>'
-        content += ' <span style="position: absolute;left: 40%;top: 2px;z-index: 999999999;">12:00</span>'
-        content += ' <span style="position: absolute;left: 75%;top:2px;z-index: 999999999;">02-15</span>'
-        content+= ' </div>'
-        content += '  </div>';
-        content += '  <div>';
-        content += '  <div class="window_info_after1"></div>';
-        content += '  <div class="window_info_after2"></div>';
-        content += '  </div>';
-        content += ' </div>';
+       var marker = new BMap.Marker(new BMap.Point(data_info[i][0], data_info[i][1])); // 创建标注
+       let color = ''
+      var type_num = 3
+      if(type_param == 'aqi') {
+        type_num = 3
+       color =  getAqiColorByNum(data_info[i][type_num])
 
-        let colorArr = ["rgb(215,156,37)", "rgb(223,79,50)", "rgb(80,194,44)", "rgb(185,33,79)", "rgb(193,42,49)", "rgb(214,198,66)"];
-        let color = colorArr[Math.floor(Math.random() * 5)]
+      } else  if(type_param == 'pm25') {
+        type_num = 4
+        color =  getPM25ColorByNum(data_info[i][type_num])
+      } else  if(type_param == 'pm10') {
+        type_num = 5
+        color =  getPM10ColorByNum(data_info[i][type_num])
+      } else  if(type_param == 'o3') {
+        type_num = 6
+        color =  geto3ColorByNum(isRealTime,data_info[i][type_num])
+      } else  if(type_param == 'co') {
+        type_num = 7
+        color =  getcoColorByNum(isRealTime,data_info[i][type_num])
 
+      } else  if(type_param == 'no2') {
+        type_num = 8
+        color =  getno2ColorByNum(isRealTime,data_info[i][type_num])
+      } else  if(type_param == 'so2') {
+        type_num = 9
+        color =  getso2ColorByNum(isRealTime,data_info[i][type_num])
+      }
         if (info_show) {
             let label_content = '';
             label_content += '<div class="point">';
-
-             var type_num = 3
-            if(type_param == 'aqi') {
-              type_num = 3
-            } else  if(type_param == 'pm25') {
-              type_num = 4
-            } else  if(type_param == 'pm10') {
-              type_num = 5
-            } else  if(type_param == 'o3') {
-              type_num = 6
-            } else  if(type_param == 'co') {
-              type_num = 7
-            } else  if(type_param == 'no2') {
-              type_num = 8
-            } else  if(type_param == 'so2') {
-              type_num = 9
-            }
             label_content += '<div style="background-color:' + color + ' " class="point_num">' + data_info[i][type_num] + '</div>';
             label_content += '<div style="border-top-color: ' + color + ' "  class="point_arrow"></div>';
-            label_content += '<div class="point_name"><span style="padding: 2px 5px;border-radius:3px;background-color: #fff;">' + data_info[i][2].substring(data_info[i][2].indexOf("-") + 1, data_info[i][2].length - 1) + '</span></div>';
+            label_content += '<div class="point_name"><span style="padding: 2px 5px;border-radius:3px;background-color: #fff;">' + data_info[i][2] + '</span></div>';
             label_content += '</div>';
             let labelpoint = new BMap.Point(data_info[i][0], data_info[i][1]);
             var labelopts = {
@@ -387,24 +458,37 @@ function map_init() {
             var label = new BMap.Label(label_content, labelopts); // 创建文本标注对象
             map.addOverlay(label);
 
-            labelClickHandler(content, label)
+            labelClickHandler( label)
         } else {
-            var imgrandom = Math.floor(Math.random() * 5 + 1);
+            var imgrandom ='';
+            if(color == '#43ce17') {
+              imgrandom =4
+            } else if (color == '#ddd72c') {
+              imgrandom =3
+            } else if (color == '#e7a423') {
+              imgrandom =1
+            } else if (color == '#ef6c19') {
+              imgrandom =1
+            }else if (color == '#f7310f') {
+              imgrandom =2
+            }else if (color == '#a7134c') {
+              imgrandom =5
+            }
             map.removeOverlay(marker);
             var icons = 'static/images/marker' + imgrandom + '.png'; //这个是你要显示坐标的图片的相对路径
             var icon = new BMap.Icon(icons, new BMap.Size(28, 28)); //显示图标大小
             marker.setIcon(icon); //设置标签的图标为自定义图标
             map.addOverlay(marker); //将标签添加到地图中去
-            addClickHandler(content, marker);
+            addClickHandler( marker);
         }
     }
 }
 
 map_init()
 
-function labelClickHandler(content, label) {
+function labelClickHandler( label) {
     label.addEventListener("click", function (e) {
-        openInfo(content, e)
+        openInfo(data_info, e)
         setTimeout(fun, 1000);//延迟一秒
         function fun() {
             var myChart1 = echarts.init(document.getElementById('main1'));
@@ -539,9 +623,10 @@ function labelClickHandler(content, label) {
     });
 }
 
-function addClickHandler(content, marker) {
+function addClickHandler( marker) {
     marker.addEventListener("click", function (e) {
-        openInfo(content, e)
+
+        openInfo(data_info, e)
         setTimeout(fun, 1000);//延迟一秒
         function fun() {
             var myChart1 = echarts.init(document.getElementById('main1'));
@@ -676,7 +761,142 @@ function addClickHandler(content, marker) {
     });
 }
 
-function openInfo(content, e) {
+function openInfo(data_info, e) {
+  var i=0
+  console.log(e.currentTarget)
+  console.log(e.currentTarget.point)
+  console.log(e.currentTarget.point.lng)
+  console.log(e.currentTarget.point.lat)
+  for(i=0 ;i<data_info.length; i++ ) {
+    if (data_info[i][0] == (''+e.currentTarget.point.lng) && data_info[i][1]==(''+e.currentTarget.point.lat)) {
+      console.log(i)
+       break;
+    }
+  }
+  console.log(i)
+  var isRealTime =  $(".li.rightliFocus").text() == '实况' ?true:false
+  var content = '';
+  content += '<div class="window_info " style="width: 380px;border-radius:5px;overflow: hidden;padding: 10px 0;border: 1px solid rgb(2,161,231);background-color: rgb(8,46,83);color: #fff">';
+  content += '<div class="col-xs-12" style="height: 3vh;line-height: 3vh;font-size: 2vh;">城市详情<span class="pull-right cityInfo_close" onclick="map.closeInfoWindow()" style="margin-top:-10px;margin-right:-5px;font-size: 18px">×</span></div>';
+  content += '<div class="text-center">';
+  content += '<div class="transborder" style="overflow: hidden;height: 6.5vh">';
+  content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 8px">';
+  content += '<div class=" dark dark_num">';
+  content += '<div class="" style="height: 3vh;line-height: 3vh;font-size: 1vh">' + data_info[i][2] + '</div>';
+  content += '<div class="" style="height: 3vh;line-height: 3vh;">' + data_info[i][10] + '</div>';
+  content += '</div>';
+  content += '</div>';
+  content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 4px">';
+  content += '<div class=" dark">';
+    var aqiColor = getAqiColorByNum(data_info[i][3])
+  content += '<div class="" style="height: 3vh;line-height: 3vh;background-color:'+aqiColor+';">AQI</div>';
+  content += '<div class="window_num dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][3] +'</div>';
+  content += '</div>';
+  content += '</div>';
+  content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 8px">';
+  content += '<div class=" dark">';
+  content += '<div class="" style="height: 3vh;line-height: 3vh;">综合指数</div>';
+  content += '<div class="window_num dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][11] +'</div>';
+  content += '</div>';
+  content += '</div>';
+  content += '</div>';
+  content += '<div class="" style="margin-top: 5px;overflow: hidden">';
+  content += '<div class="col-xs-4  transborder" style="height: 6.5vh;padding: 0 8px">';
+  content += '<div class="col-xs-6 dark " style="height: 6vh;padding-right: 3px">';
+  content += '<div style="">';
+  var pm25Color = getPM25ColorByNum(data_info[i][4])
+  content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+pm25Color+';">PM2.5</div>';
+  content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][4] +'</div>';
+  content += '</div>';
+  content += '</div>';
+  content += '<div class="col-xs-6 dark " style="height: 6vh;padding-left: 3px;>';
+  content += '<div style="">';
+  var pm10Color = getPM10ColorByNum(data_info[i][5])
+  content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+pm10Color+';">PM10</div>';
+  content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][5] +'</div>';
+  content += '</div>';
+  // content += '</div>';
+  content += '</div>';
+  content += '<div class="col-xs-4 transborder" style="height: 6.5vh;padding: 0 4px">';
+  content += '<div class="col-xs-6 dark" style="height: 6vh;padding-right: 3px">';
+  content += '<div style="">';
+  var so2Color = getso2ColorByNum(isRealTime,data_info[i][9])
+  content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+so2Color+';">SO2</div>';
+  content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][9] +'</div>';
+  content += '</div>';
+  content += '</div>';
+  content += '<div class="col-xs-6 dark " style="height: 6vh;padding-left: 3px">';
+  content += '<div style="">';
+  var no2Color = getno2ColorByNum(isRealTime,data_info[i][8])
+  content += '<div class="" style="height: 3vh;line-height: 3vh;background-color:'+no2Color+';">NO2</div>';
+  content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][8] +'</div>';
+  content += '</div>';
+  content += '</div>';
+  content += '</div>';
+  content += '<div class="col-xs-4 transborder" style="height: 6.5vh;padding: 0 8px">';
+  content += '<div class="col-xs-6 dark" style="height: 6vh;padding-right: 3px">';
+  content += '<div style="">';
+  var coColor = getcoColorByNum(isRealTime,data_info[i][7])
+  content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+coColor+';">CO</div>';
+  content += '<div class=" dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][7] +'</div>';
+  content += '</div>';
+  content += '</div>';
+  content += '<div class="col-xs-6 dark" style="height: 6vh;padding-left: 3px">';
+  content += '<div style="">';
+  var o3Color = geto3ColorByNum(isRealTime,data_info[i][6])
+  content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+o3Color+';">O3</div>';
+  content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][6] +'</div>';
+  content += '</div>';
+  content += '</div>';
+  content += '</div>';
+  content += '</div>';
+  content += '</div>';
+  content += '<div style="height: 6.5vh;margin-top: 5px;" class="text-center">';
+  content += '<div class="col-xs-4 " style="height: 6vh;padding: 0 8px">';
+  content += '<div class=" dark dark_num" style="height: 6vh;line-height: 6vh;font-size: 2vh"><i class="fa fa-thermometer-three-quarters"></i> 11.9℃</div>';
+  content += '</div>';
+  content += '<div class="col-xs-4 " style="height: 6vh;padding: 0 4px">';
+  content += ' <div class="" >';
+  content += ' <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-tint"></i> 湿度 47.5%</div>';
+  content += ' <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-signal"></i> 风速 14km/h</div>';
+  content += ' </div>';
+  content += ' </div>';
+  content += ' <div class="col-xs-4 " style="height: 6vh;padding: 0 8px">';
+  content += '  <div class="">';
+  content += '  <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-send-o"></i> 风向东北</div>';
+  content += ' <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-superpowers"></i> 风力 1级</div>';
+  content += ' </div>';
+  content += '  </div>';
+  content += '  </div>';
+  content += '  <div style="height:15px;line-height:15px;text-align:center">最近及未来二十四小时AQI变化曲线</div>';
+  content += '  <div style="height: 10.5vh;margin-top: 5px;" class="text-center">';
+  content+='<div class="col-xs-12" style="width: 90%;float: right;margin-right:2%;border-top: 1px solid #aaa;position: relative">'
+  content += '<span style="position: absolute;left: -28px;top: -10px;z-index: 999999999;background-color: rgb(8,46,83)">120 </span>'
+  content += '<span style="position: absolute;left: 26.5%;top:0;z-index: 999999999;">历史</span>'
+  content += '<span style="position: absolute;left: 76%;top:0;z-index: 999999999;">预测</span>'
+  content+= ' </div>'
+  content += ' <div class="col-xs-12 " style="height: 8vh;padding-top: 15px;position:relative">';
+  content+='<div style="position:absolute;width:30%;right:4%;z-index:99999999;bottom:0;height:8vh;background-color:rgba(255,255,255,0.1)"></div>'
+  content += '  <div class="col-xs-8" style="padding:0;height: 8vh;line-height: 8vh;padding-left: 10px" id="main1"></div>';
+  content += '  <div class="col-xs-4" style="padding:0;height: 8vh;line-height: 8vh;" id="main2"></div>';
+  content += '  </div>';
+  content+='<div class="col-xs-12" style="width: 90%;float: right;margin-right:2%;border-bottom: 1px solid #aaa;position: relative">'
+  content+='<div class="col-xs-12" style="height:5px;overflow:hidden;position: absolute">'
+  content += '<span style="position: absolute;left: 11.5%;top: -10px;z-index: 99999;">|</span>'
+  content += ' <span style="position: absolute;left: 40%;top: -10px;z-index: 99999;">|</span>'
+  content += ' <span style="position: absolute;left: 75.5%;top:-10px;z-index: 99999;">|</span>'
+  content+= ' </div>'
+  content += ' <span style="position: absolute;left: -28px;top: -10px;z-index: 999999999;">&nbsp;&nbsp;0</span>'
+  content += '<span style="position: absolute;left: 11%;top: 2px;z-index: 999999999;">02-14</span>'
+  content += ' <span style="position: absolute;left: 40%;top: 2px;z-index: 999999999;">12:00</span>'
+  content += ' <span style="position: absolute;left: 75%;top:2px;z-index: 999999999;">02-15</span>'
+  content+= ' </div>'
+  content += '  </div>';
+  content += '  <div>';
+  content += '  <div class="window_info_after1"></div>';
+  content += '  <div class="window_info_after2"></div>';
+  content += '  </div>';
+  content += ' </div>';
     var p = e.target;
     var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
     var infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象

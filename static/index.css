@@ -159,7 +159,7 @@ body {
   margin-top: 10vh;
   height: 80vh;
   padding: 1vh 15px;
-  font-size: 1vh;
+  font-size: 1.5vh;
   padding-right: 0;
 }
 
@@ -433,6 +433,7 @@ body {
 
 .map_sort {
   height: 4vh;
+  cursor: pointer;
   /* border: 1px solid #666; */
 }
 
@@ -491,6 +492,7 @@ body {
 }
 
 .content_right_header ul {
+  cursor: pointer;
   background-color: rgba(26, 30, 51, .6);
   margin: 0;
   padding: 0;

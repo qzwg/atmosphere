@@ -4,19 +4,19 @@ function makesvg( inner_text){
     var inner_text = parseInt(inner_text);
     var classes = ""
      console.log(abs_percentage)
-    if(inner_text > 0 && inner_text <= 50){
+    if(inner_text >= 0 && inner_text <= 50){
     classes = "success-stroke ";
       inner_text_title = '优'
     } else if(inner_text > 50 && inner_text <= 100){
     classes = "yellow-stroke";
       inner_text_title = '良'
-    }else if(inner_text > 101 && inner_text <= 150){
+    }else if(inner_text > 100 && inner_text <= 150){
     classes = "light-stroke";
       inner_text_title = '轻度'
-    }else if(inner_text > 151 && inner_text <= 200){
+    }else if(inner_text > 150 && inner_text <= 200){
     classes = "middle-stroke";
       inner_text_title = '中度'
-    }else if(inner_text > 201 && inner_text <= 300){
+    }else if(inner_text > 200 && inner_text <= 300){
     classes = "severe-stroke";
       inner_text_title = '重度'
     } else{
