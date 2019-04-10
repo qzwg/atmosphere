@@ -179,7 +179,7 @@ var httpUrl = 'http://180.76.119.77:9096'
 function getDataRealTimeInfoList() {
   $.ajax({
     type: "get",//'/static/currentMapData.json'   '/api/currentMapData'
-    url:'/static/currentMapData.json',//服务器
+    url:httpUrl+'/api/currentMapData',//服务器
     async: false,
     success: function(data){
         if(data.code == '200') {
@@ -201,8 +201,8 @@ function getDataRealTimeInfoList() {
 }
 function getDataTotalInfoList() {
   $.ajax({
-    type: "get",
-    url:'/static/cumMapData.json',//服务器
+    type: "get", // /static/cumMapData.json
+    url:httpUrl+'/api/cumMapData',//服务器
     async: false,
     success: function(data){
         if(data.code == '200') {
@@ -415,7 +415,7 @@ function map_init() {
   var type_param = $(".airtype.right_ol_liFocus").data('type')
   console.log(type_param)
   var isRealTime =  $(".li.rightliFocus").text() == '实况' ?true:false
-    for (var i = 0; i < 200; i++) {
+    for (var i = 0; i < data_info.length; i++) {
        var marker = new BMap.Marker(new BMap.Point(data_info[i][0], data_info[i][1])); // 创建标注
        let color = ''
       var type_num = 3
@@ -488,6 +488,7 @@ map_init()
 
 function labelClickHandler( label) {
     label.addEventListener("click", function (e) {
+
         openInfo(data_info, e)
         setTimeout(fun, 1000);//延迟一秒
         function fun() {
@@ -622,7 +623,15 @@ function labelClickHandler( label) {
         }
     });
 }
-
+function getCityNameBylatlng (){
+  var i=0
+  for(i=0 ;i<data_info.length; i++ ) {
+    if (data_info[i][0] == (''+e.currentTarget.point.lng) && data_info[i][1]==(''+e.currentTarget.point.lat)) {
+      console.log(i)
+      return data_info[i]
+    }
+  }
+}
 function addClickHandler( marker) {
     marker.addEventListener("click", function (e) {
 
