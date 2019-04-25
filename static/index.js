@@ -148,6 +148,7 @@ var info_show = true;
 
 let mapZoom = 6;
 var map_point = "";
+
 // 地图加载完毕
 map.addEventListener("tilesloaded",
     function () {
@@ -156,11 +157,33 @@ map.addEventListener("tilesloaded",
         mapZoom = map.getZoom();
         if (map.getZoom() < 6) {
             info_show = false;
-            map_init();
+            // map_init();
         } else {
             info_show = true;
-            map_init();
+            // map_init();
         }
+      var bs=map.getBounds();
+      var bssw = bs.getSouthWest()
+      var bsne = bs.getNorthEast()
+      var lat1 = (bssw.lat).toString()
+      var lng1 =(bssw.lng).toString()
+      var lat2 = (bsne.lat).toString()
+      var lng2 = (bsne.lng).toString()
+      console.log(bs)
+      var obj = {}
+      obj.level=mapZoom
+      obj.lng=lng1
+      obj.lat = lat1
+      obj.lng1=lng2
+      obj.lat1 = lat2
+
+      var isRealTime =  $(".li.rightliFocus").text() == '实况' ?true:false
+      if(isRealTime) {
+        getDataRealTimeInfoList(obj)
+      } else {
+        getDataTotalInfoList(obj)
+      }
+      map_init()
         console.log("地图加载完毕");
         $("#loading").hide();
         map_point = new BMap.Point(map.getCenter().lng, map.getCenter().lat);
@@ -176,10 +199,12 @@ var opts = {
     enableMessage: true, //设置允许信息窗发送短息
 };
 var httpUrl = 'http://180.76.119.77:9096'
-function getDataRealTimeInfoList() {
+function getDataRealTimeInfoList(obj) {
+  var dataForm = obj
   $.ajax({
-    type: "get",//'/static/currentMapData.json'   '/api/currentMapData'
+    type: "post",//'/static/currentMapData.json'   '/api/currentMapData'
     url:httpUrl+'/api/currentMapData',//服务器
+    data:dataForm,
     async: false,
     success: function(data){
         if(data.code == '200') {
@@ -199,10 +224,12 @@ function getDataRealTimeInfoList() {
     }
   })
 }
-function getDataTotalInfoList() {
+function getDataTotalInfoList(obj) {
+  var dataForm = obj
   $.ajax({
-    type: "get", // /static/cumMapData.json
+    type: "post", // /static/cumMapData.json
     url:httpUrl+'/api/cumMapData',//服务器
+    data:dataForm,
     async: false,
     success: function(data){
         if(data.code == '200') {
@@ -222,12 +249,7 @@ function getDataTotalInfoList() {
     }
   })
 }
-var isRealTime =  $(".li.rightliFocus").text() == '实况' ?true:false
-if(isRealTime) {
-  getDataRealTimeInfoList()
-} else {
-  getDataTotalInfoList()
-}
+
 function getAqiColorByNum (num) {
   var color =''
   if (0<= num &&  num <= 50)  {

@@ -91,7 +91,7 @@
               <div class="col-xs-3 whtitle">城市排名</div>
               <div class="col-xs-9 text-right">
                 <ul class="city_sort_change">
-                  <li class="liFocus">169</li>
+                  <li class="liFocus">168</li>
                   <li>2+26</li>
                   <li>省内</li>
                   <li>县区</li>
@@ -786,10 +786,25 @@
             width:'60',
             sortable: true,
             render:(h, params) => {
+              var color =''
+              var num= params.row.AQI
+              if (0<= num &&  num <= 50)  {
+                color = '#43ce17'
+              }else if(50< num &&  num <= 100) {
+                color = '#ddd72c'
+              }else if(100< num &&  num <= 150) {
+                color = '#e7a423'
+              }else if(150< num &&  num <= 200) {
+                color = '#ef6c19'
+              }else if(200< num &&  num <= 300) {
+                color = '#f7310f'
+              }else {
+                color = '#a7134c'
+              }
               return h('span',{style:{color:'#fff',
                   padding:'5px 15px',
                   borderRadius:'10px',
-                  backgroundColor: 'rgb(188, 176, 42)'
+                  backgroundColor: color
                 }},params.row.AQI);
             }
           },
