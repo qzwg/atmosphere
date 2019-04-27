@@ -170,18 +170,18 @@ map.addEventListener("tilesloaded",
       var lat2 = (bsne.lat).toString()
       var lng2 = (bsne.lng).toString()
       console.log(bs)
-      var obj = {}
-      obj.level=mapZoom
-      obj.lng=lng1
-      obj.lat = lat1
-      obj.lng1=lng2
-      obj.lat1 = lat2
+       g_obj = {}
+      g_obj.level=mapZoom
+      g_obj.lng=lng1
+      g_obj.lat = lat1
+      g_obj.lng1=lng2
+      g_obj.lat1 = lat2
 
       var isRealTime =  $(".li.rightliFocus").text() == '实况' ?true:false
       if(isRealTime) {
-        getDataRealTimeInfoList(obj)
+        getDataRealTimeInfoList(g_obj)
       } else {
-        getDataTotalInfoList(obj)
+        getDataTotalInfoList(g_obj)
       }
       map_init()
         console.log("地图加载完毕");
@@ -199,8 +199,8 @@ var opts = {
     enableMessage: true, //设置允许信息窗发送短息
 };
 var httpUrl = 'http://180.76.119.77:9096'
-function getDataRealTimeInfoList(obj) {
-  var dataForm = obj
+function getDataRealTimeInfoList() {
+  var dataForm = g_obj
   $.ajax({
     type: "post",//'/static/currentMapData.json'   '/api/currentMapData'
     url:httpUrl+'/api/currentMapData',//服务器
@@ -210,9 +210,9 @@ function getDataRealTimeInfoList(obj) {
         if(data.code == '200') {
           data_info =[]
           var restData=[]
-          if(obj.level <10) {
+          if(dataForm.level <10) {
             restData =data.data.OneCurrent
-          }else if(obj.level <13){
+          }else if(dataForm.level <13){
             restData =data.data.TwoCurrent
           } else {
             restData =data.data.ThreeCurrent
@@ -233,8 +233,10 @@ function getDataRealTimeInfoList(obj) {
     }
   })
 }
-function getDataTotalInfoList(obj) {
-  var dataForm = obj
+function getDataTotalInfoList() {
+  console.log("ffdf")
+  console.log(g_obj)
+  var dataForm = g_obj
   $.ajax({
     type: "post", // /static/cumMapData.json
     url:httpUrl+'/api/cumMapData',//服务器
@@ -244,9 +246,9 @@ function getDataTotalInfoList(obj) {
         if(data.code == '200') {
           data_info =[]
           var restData=[]
-          if(obj.level <10) {
+          if(dataForm.level <10) {
             restData =data.data.OneCumUnion
-          }else if(obj.level <13){
+          }else if(dataForm.level <13){
             restData =data.data.TwoCumUnion
           } else {
             restData =data.data.ThreeCumUnion
