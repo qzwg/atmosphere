@@ -209,14 +209,23 @@ function getDataRealTimeInfoList(obj) {
     success: function(data){
         if(data.code == '200') {
           data_info =[]
-          for(var i in data.data) {
+          var restData=[]
+          if(obj.level <10) {
+            restData =data.data.OneCurrent
+          }else if(obj.level <13){
+            restData =data.data.TwoCurrent
+          } else {
+            restData =data.data.ThreeCurrent
+          }
+          for(var i in restData) {
             //[111.181262093, 34.7833199411, "河南省-三门峡市"]
-            var date_str = new Date(data.data[i].data_real_time).format("yyyy-MM-dd")
+
+            var date_str = new Date(restData[i].data_real_time).format("yyyy-MM-dd")
             data_info.push([
-              data.data[i].longitude,data.data[i].latitude,data.data[i].name,
-              data.data[i].aqi,data.data[i].pm25,data.data[i].pm10,data.data[i].o3,
-              data.data[i].co,data.data[i].no2,data.data[i].so2,
-              date_str,data.data[i].composite_index,
+              restData[i].lng,restData[i].lat,restData[i].city_name,
+              restData[i].aqi,restData[i].pm25,restData[i].pm10,restData[i].o3,
+              restData[i].co,restData[i].no2,restData[i].so2,
+              date_str,restData[i].composite_index,
             ])
           }
       }
@@ -234,14 +243,23 @@ function getDataTotalInfoList(obj) {
     success: function(data){
         if(data.code == '200') {
           data_info =[]
-          for(var i in data.data) {
+          var restData=[]
+          if(obj.level <10) {
+            restData =data.data.OneCumUnion
+          }else if(obj.level <13){
+            restData =data.data.TwoCumUnion
+          } else {
+            restData =data.data.ThreeCumUnion
+          }
+          for(var i in restData) {
             //[111.181262093, 34.7833199411, "河南省-三门峡市"]
-            var date_str = new Date(data.data[i].data_real_time).format("yyyy-MM-dd")
+
+            var date_str = new Date(restData[i].data_real_time).format("yyyy-MM-dd")
             data_info.push([
-              data.data[i].longitude,data.data[i].latitude,data.data[i].name,
-              data.data[i].aqi,data.data[i].pm25,data.data[i].pm10,data.data[i].o3,
-              data.data[i].co,data.data[i].no2,data.data[i].so2,
-              date_str,data.data[i].composite_index,
+              restData[i].lng,restData[i].lat,restData[i].city_name,
+              restData[i].aqi,restData[i].pm25,restData[i].pm10,restData[i].o3,
+              restData[i].co,restData[i].no2,restData[i].so2,
+              date_str,restData[i].composite_index,
             ])
           }
       }
@@ -506,7 +524,7 @@ function map_init() {
     }
 }
 
-map_init()
+
 
 function labelClickHandler( label) {
     label.addEventListener("click", function (e) {

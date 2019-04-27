@@ -926,7 +926,7 @@
         var dd = $(".city_sort_change .liFocus").text()
         console.log(dd)
         var modelNum = ''
-        if (dd == '169') {
+        if (dd == '168') {
           modelNum = '2'
         }else if(dd == '2+26') {
           modelNum ='1'
