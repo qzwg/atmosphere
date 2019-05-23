@@ -1,4 +1,3 @@
-
 Date.prototype.format = function(fmt) {
   var o = {
     "M+" : this.getMonth()+1,                 //月份
@@ -19,7 +18,8 @@ Date.prototype.format = function(fmt) {
   }
   return fmt;
 }
-
+var yuceChartsData = [] // 预测弹框的数据
+var hisChartsData = [] // 历史弹框的数据
 // // 初始化模板选择的下拉框
 // var sel = document.getElementById('stylelist');
 // for (var key in mapstyles) {
@@ -170,13 +170,19 @@ map.addEventListener("tilesloaded",
       var lat2 = (bsne.lat).toString()
       var lng2 = (bsne.lng).toString()
       console.log(bs)
-       g_obj = {}
+      g_obj = {}
       g_obj.level=mapZoom
       g_obj.lng=lng1
       g_obj.lat = lat1
       g_obj.lng1=lng2
       g_obj.lat1 = lat2
-
+      // g_obj.time = () => {
+      //   var dateee = new Date().toJSON();
+      //     return new Date(+new Date(dateee) + 8 * 3600 * 1000)
+      //         .toISOString()
+      //         .replace(/T/g, " ")
+      //         .replace(/\.[\d]{3}Z/, "")
+      // }
       var isRealTime =  $(".li.rightliFocus").text() == '实况' ?true:false
       if(isRealTime) {
         getDataRealTimeInfoList(g_obj)
@@ -184,9 +190,9 @@ map.addEventListener("tilesloaded",
         getDataTotalInfoList(g_obj)
       }
       map_init()
-        console.log("地图加载完毕");
-        $("#loading").hide();
-        map_point = new BMap.Point(map.getCenter().lng, map.getCenter().lat);
+      console.log("地图加载完毕");
+      $("#loading").hide();
+      map_point = new BMap.Point(map.getCenter().lng, map.getCenter().lat);
     })
 
 
@@ -202,7 +208,7 @@ var httpUrl = 'http://180.76.119.77:9096'
 function getDataRealTimeInfoList() {
   var dataForm = g_obj
   $.ajax({
-    type: "post",//'/static/currentMapData.json'   '/api/currentMapData'
+    type: "get",//'/static/currentMapData.json'   '/api/currentMapData'
     url:httpUrl+'/api/currentMapData',//服务器
     data:dataForm,
     async: false,
@@ -215,17 +221,16 @@ function getDataRealTimeInfoList() {
           }else if(dataForm.level <13){
             restData =data.data.TwoCurrent
           } else {
-            restData =data.data.ThreeCurrent
-          }
+            restData =data.data.ThreeCurrent}
           for(var i in restData) {
             //[111.181262093, 34.7833199411, "河南省-三门峡市"]
-
             var date_str = new Date(restData[i].data_real_time).format("yyyy-MM-dd")
             data_info.push([
               restData[i].lng,restData[i].lat,restData[i].city_name,
-              restData[i].aqi,restData[i].pm25,restData[i].pm10,restData[i].o3,
+              // pm25改为pm2_5 ,restData[i].aqi,restData[i].pm25,restData[i].pm10,restData[i].o3,
+              restData[i].aqi,restData[i].pm2_5,restData[i].pm10,restData[i].o3,
               restData[i].co,restData[i].no2,restData[i].so2,
-              date_str,restData[i].composite_index,
+              date_str,restData[i].composite_index,restData[i].area_id
             ])
           }
       }
@@ -234,8 +239,8 @@ function getDataRealTimeInfoList() {
   })
 }
 function getDataTotalInfoList() {
-  console.log("ffdf")
-  console.log(g_obj)
+  // console.log("ffdf")
+  // console.log(g_obj)
   var dataForm = g_obj
   $.ajax({
     type: "post", // /static/cumMapData.json
@@ -261,11 +266,10 @@ function getDataTotalInfoList() {
               restData[i].lng,restData[i].lat,restData[i].city_name,
               restData[i].aqi,restData[i].pm25,restData[i].pm10,restData[i].o3,
               restData[i].co,restData[i].no2,restData[i].so2,
-              date_str,restData[i].composite_index,
+              date_str,restData[i].composite_index,restData[i].area_id
             ])
           }
       }
-      console.log(data_info)
     }
   })
 }
@@ -453,7 +457,6 @@ function getso2ColorByNum (isRealTime,num) {
   return color
 }
 function map_init() {
-
   var type_param = $(".airtype.right_ol_liFocus").data('type')
   console.log(type_param)
   var isRealTime =  $(".li.rightliFocus").text() == '实况' ?true:false
@@ -526,8 +529,6 @@ function map_init() {
     }
 }
 
-
-
 function labelClickHandler( label) {
     label.addEventListener("click", function (e) {
 
@@ -535,15 +536,18 @@ function labelClickHandler( label) {
         setTimeout(fun, 1000);//延迟一秒
         function fun() {
             var myChart1 = echarts.init(document.getElementById('main1'));
-            console.log("如果找到id为main的div就会看到本条信息");
+            console.log("如果找到id为main1的div就会看到本条信息");
+            console.log(hisChartsData)
             var cData = [100, 152, 200, 334, 390, 330, 220,110, 52, 200, 334, 390, 330, 220, 330, 220, 152, 200, 334, 390, 330, 220, 330, 220]
-            option1 = {
+
+          option1 = {
                 tooltip: {
-                    show:false,
+                    show:true,
                     trigger: 'axis',
                     axisPointer: { // 坐标轴指示器，坐标轴触发有效
                         type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
-                    }
+                    },
+                  formatter: "AQI:{c}"
                 },
 
                 legend: {
@@ -552,7 +556,7 @@ function labelClickHandler( label) {
                 grid: {
                     left: '-20',
                     right: '0',
-                    bottom: '-3',
+                    bottom: '-5',
                     top: '5',
                     containLabel: true
                 },
@@ -591,20 +595,28 @@ function labelClickHandler( label) {
                             normal: {
                                 color: function (params) {
                                     // build a color map as your need.
-                                    var colorList = ['green', 'red', 'yellow'];
+                                    // var colorList = ['green', 'red', 'yellow'];
                                     // return colorList[params.dataIndex]
-                                    return params.data == Math.max(...cData) ? 'red' : params.data == Math.min(...cData) ? 'green' : 'yellow';
+                                    // return params.data == Math.max(...hisChartsData) ? 'red' : params.data == Math.min(...hisChartsData) ? 'green' : 'yellow';
+                                  let mycolor= params.data >=0&&params.data<=50?'#43ce17'
+                                    :params.data>=51&&params.data<=100?'#ddd72c'
+                                      :params.data>=101&&params.data<=150?'#e7a423 '
+                                        :params.data>=151&&params.data<=200?'#ef6c19'
+                                          :params.data>=201&&params.data<=300?'#e7a423 '
+                                            :'#ef6c19'
+                                  return mycolor
                                 },
                             },
                         },
-                        data:cData,
+                        data:hisChartsData,
                         barCategoryGap :2
                     }
                 ]
             };
+          $("#maxvalue").html(Math.max(...hisChartsData))
             myChart1.setOption(option1);
             var myChart2 = echarts.init(document.getElementById('main2'));
-            console.log("如果找到id为main的div就会看到本条信息");
+            console.log("如果找到id为main2的div就会看到本条信息");
             option2 = {
                 tooltip: {
                     show:false,
@@ -620,7 +632,7 @@ function labelClickHandler( label) {
                 grid: {
                     left: '-20',
                     right: '0',
-                    bottom: '-3',
+                    bottom: '-5',
                     top: '5',
                     containLabel: true
                 },
@@ -634,7 +646,8 @@ function labelClickHandler( label) {
                                 width: 1 // 粗细
                             }
                         },
-                        data:[100, 152, 200, 334, 390, 330, 220, 330, 390, 330, 220, 330]
+                        data: yuceChartsData
+                        // data:[100, 152, 200, 334, 390, 330, 220, 330, 390, 330, 220, 330]
                     }
                 ],
                 yAxis: [
@@ -656,7 +669,8 @@ function labelClickHandler( label) {
                         color:"#666",
                         type:'bar',
                         barWidth: '60%',
-                        data:[100, 152, 200, 334, 390, 330, 220, 330, 390, 330, 220, 330],
+                        data: yuceChartsData,
+                        // data:[100, 152, 200, 334, 390, 330, 220, 330, 390, 330, 220, 330],
                         barCategoryGap :2
                     }
                 ]
@@ -676,20 +690,23 @@ function getCityNameBylatlng (){
 }
 function addClickHandler( marker) {
     marker.addEventListener("click", function (e) {
-
+      console.log('点击')
         openInfo(data_info, e)
         setTimeout(fun, 1000);//延迟一秒
         function fun() {
             var myChart1 = echarts.init(document.getElementById('main1'));
             console.log("如果找到id为main的div就会看到本条信息");
+            console.log(yuceChartsData)
             var cData = [100, 152, 200, 334, 390, 330, 220,110, 52, 200, 334, 390, 330, 220, 330, 220, 152, 200, 334, 390, 330, 220, 330, 220]
-            option1 = {
+
+          option1 = {
                 tooltip: {
-                    show:false,
+                    show:true,
                     trigger: 'axis',
                     axisPointer: { // 坐标轴指示器，坐标轴触发有效
                         type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
-                    }
+                    },
+                  formatter: "AQI:{c}"
                 },
 
                 legend: {
@@ -698,7 +715,7 @@ function addClickHandler( marker) {
                 grid: {
                     left: '-20',
                     right: '0',
-                    bottom: '-3',
+                    bottom: '-5',
                     top: '5',
                     containLabel: true
                 },
@@ -712,7 +729,8 @@ function addClickHandler( marker) {
                                 width: 1 // 粗细
                             }
                         },
-                        data: [100, 152, 200, 334, 390, 330, 220,110, 52, 200, 334, 390, 330, 220, 330, 220, 152, 200, 334, 390, 330, 220, 330, 220]
+                        data: cData
+                        // data: [100, 152, 200, 334, 390, 330, 220,110, 52, 200, 334, 390, 330, 220, 330, 220, 152, 200, 334, 390, 330, 220, 330, 220]
                     }
                 ],
                 yAxis: [
@@ -737,10 +755,17 @@ function addClickHandler( marker) {
                             normal: {
                                 color: function (params) {
                                     // build a color map as your need.
-                                    var colorList = ['green', 'red', 'yellow'];
+                                    // var colorList = ['green', 'red', 'yellow'];
                                     // return colorList[params.dataIndex]
-                                    return params.data == Math.max(...cData) ? 'red' : params.data == Math.min(...cData) ? 'green' : 'yellow';
-                                },
+                                    // return params.data == Math.max(...cData) ? 'red' : params.data == Math.min(...cData) ? 'green' : 'yellow';
+                                 let mycolor= params.data >=0&&params.data<=50?'#43ce17'
+                                    :params.data>=51&&params.data<=100?'#ddd72c'
+                                      :params.data>=101&&params.data<=150?'#e7a423 '
+                                        :params.data>=151&&params.data<=200?'#ef6c19'
+                                          :params.data>=201&&params.data<=300?'#e7a423 '
+                                            :'#ef6c19'
+                                  return mycolor
+                                    },
                             },
                         },
                         data:cData,
@@ -748,6 +773,7 @@ function addClickHandler( marker) {
                     }
                 ]
             };
+          $("#maxvalue").html(Math.max(...cData))
             myChart1.setOption(option1);
             var myChart2 = echarts.init(document.getElementById('main2'));
             console.log("如果找到id为main的div就会看到本条信息");
@@ -766,7 +792,7 @@ function addClickHandler( marker) {
                 grid: {
                     left: '-20',
                     right: '0',
-                    bottom: '-3',
+                    bottom: '-5',
                     top: '5',
                     containLabel: true
                 },
@@ -780,7 +806,8 @@ function addClickHandler( marker) {
                                 width: 1 // 粗细
                             }
                         },
-                        data:[100, 152, 200, 334, 390, 330, 220, 330, 390, 330, 220, 330]
+                        data: yuceChartsData
+                        // data:[100, 152, 200, 334, 390, 330, 220, 330, 390, 330, 220, 330]
                     }
                 ],
                 yAxis: [
@@ -802,7 +829,8 @@ function addClickHandler( marker) {
                         color:"#666",
                         type:'bar',
                         barWidth: '60%',
-                        data:[100, 152, 200, 334, 390, 330, 220, 330, 390, 330, 220, 330],
+                        data: yuceChartsData,
+                        // data:[100, 152, 200, 334, 390, 330, 220, 330, 390, 330, 220, 330],
                         barCategoryGap :2
                     }
                 ]
@@ -812,7 +840,27 @@ function addClickHandler( marker) {
     });
 }
 
+function getCityData (isRealTime, data) {
+  var url = 'http://180.76.119.77:9096/api/curCityData'
+  if (!isRealTime) {
+    url = 'http://180.76.119.77:9096/api/cumCityData'
+  }
+  var promise = new Promise(function(resolve,reject){
+    $.ajax({
+      url: url,
+      data: data,
+      success: res => resolve(res),
+      error: err => reject(err)
+    })
+  })
+  return promise
+}
 function openInfo(data_info, e) {
+  console.log(222222222222222222222)
+  console.log(data_info)
+  console.log(222222222222222222222)
+  console.log('openInfo')
+  console.log(e)
   var i=0
   console.log(e.currentTarget)
   console.log(e.currentTarget.point)
@@ -827,138 +875,213 @@ function openInfo(data_info, e) {
   console.log(i)
   var isRealTime =  $(".li.rightliFocus").text() == '实况' ?true:false
   var content = '';
-  content += '<div class="window_info " style="width: 380px;border-radius:5px;overflow: hidden;padding: 10px 0;border: 1px solid rgb(2,161,231);background-color: rgb(8,46,83);color: #fff">';
-  content += '<div class="col-xs-12" style="height: 3vh;line-height: 3vh;font-size: 2vh;">城市详情<span class="pull-right cityInfo_close" onclick="map.closeInfoWindow()" style="margin-top:-10px;margin-right:-5px;font-size: 18px">×</span></div>';
-  content += '<div class="text-center">';
-  content += '<div class="transborder" style="overflow: hidden;height: 6.5vh">';
-  content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 8px">';
-  content += '<div class=" dark dark_num">';
-  content += '<div class="" style="height: 3vh;line-height: 3vh;font-size: 1vh">' + data_info[i][2] + '</div>';
-  content += '<div class="" style="height: 3vh;line-height: 3vh;">' + data_info[i][10] + '</div>';
-  content += '</div>';
-  content += '</div>';
-  content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 4px">';
-  content += '<div class=" dark">';
-    var aqiColor = getAqiColorByNum(data_info[i][3])
-  content += '<div class="" style="height: 3vh;line-height: 3vh;background-color:'+aqiColor+';">AQI</div>';
-  content += '<div class="window_num dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][3] +'</div>';
-  content += '</div>';
-  content += '</div>';
-  content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 8px">';
-  content += '<div class=" dark">';
-  content += '<div class="" style="height: 3vh;line-height: 3vh;">综合指数</div>';
-  content += '<div class="window_num dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][11] +'</div>';
-  content += '</div>';
-  content += '</div>';
-  content += '</div>';
-  content += '<div class="" style="margin-top: 5px;overflow: hidden">';
-  content += '<div class="col-xs-4  transborder" style="height: 6.5vh;padding: 0 8px">';
-  content += '<div class="col-xs-6 dark " style="height: 6vh;padding-right: 3px">';
-  content += '<div style="">';
-  var pm25Color = getPM25ColorByNum(data_info[i][4])
-  content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+pm25Color+';">PM2.5</div>';
-  content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][4] +'</div>';
-  content += '</div>';
-  content += '</div>';
-  content += '<div class="col-xs-6 dark " style="height: 6vh;padding-left: 3px;>';
-  content += '<div style="">';
-  var pm10Color = getPM10ColorByNum(data_info[i][5])
-  content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+pm10Color+';">PM10</div>';
-  content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][5] +'</div>';
-  content += '</div>';
-  // content += '</div>';
-  content += '</div>';
-  content += '<div class="col-xs-4 transborder" style="height: 6.5vh;padding: 0 4px">';
-  content += '<div class="col-xs-6 dark" style="height: 6vh;padding-right: 3px">';
-  content += '<div style="">';
-  var so2Color = getso2ColorByNum(isRealTime,data_info[i][9])
-  content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+so2Color+';">SO2</div>';
-  content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][9] +'</div>';
-  content += '</div>';
-  content += '</div>';
-  content += '<div class="col-xs-6 dark " style="height: 6vh;padding-left: 3px">';
-  content += '<div style="">';
-  var no2Color = getno2ColorByNum(isRealTime,data_info[i][8])
-  content += '<div class="" style="height: 3vh;line-height: 3vh;background-color:'+no2Color+';">NO2</div>';
-  content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][8] +'</div>';
-  content += '</div>';
-  content += '</div>';
-  content += '</div>';
-  content += '<div class="col-xs-4 transborder" style="height: 6.5vh;padding: 0 8px">';
-  content += '<div class="col-xs-6 dark" style="height: 6vh;padding-right: 3px">';
-  content += '<div style="">';
-  var coColor = getcoColorByNum(isRealTime,data_info[i][7])
-  content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+coColor+';">CO</div>';
-  content += '<div class=" dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][7] +'</div>';
-  content += '</div>';
-  content += '</div>';
-  content += '<div class="col-xs-6 dark" style="height: 6vh;padding-left: 3px">';
-  content += '<div style="">';
-  var o3Color = geto3ColorByNum(isRealTime,data_info[i][6])
-  content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+o3Color+';">O3</div>';
-  content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ data_info[i][6] +'</div>';
-  content += '</div>';
-  content += '</div>';
-  content += '</div>';
-  content += '</div>';
-  content += '</div>';
-  content += '<div style="height: 6.5vh;margin-top: 5px;" class="text-center">';
-  content += '<div class="col-xs-4 " style="height: 6vh;padding: 0 8px">';
-  content += '<div class=" dark dark_num" style="height: 6vh;line-height: 6vh;font-size: 2vh"><i class="fa fa-thermometer-three-quarters"></i> 11.9℃</div>';
-  content += '</div>';
-  content += '<div class="col-xs-4 " style="height: 6vh;padding: 0 4px">';
-  content += ' <div class="" >';
-  content += ' <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-tint"></i> 湿度 47.5%</div>';
-  content += ' <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-signal"></i> 风速 14km/h</div>';
-  content += ' </div>';
-  content += ' </div>';
-  content += ' <div class="col-xs-4 " style="height: 6vh;padding: 0 8px">';
-  content += '  <div class="">';
-  content += '  <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-send-o"></i> 风向东北</div>';
-  content += ' <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-superpowers"></i> 风力 1级</div>';
-  content += ' </div>';
-  content += '  </div>';
-  content += '  </div>';
-  content += '  <div style="height:15px;line-height:15px;text-align:center">最近及未来二十四小时AQI变化曲线</div>';
-  content += '  <div style="height: 10.5vh;margin-top: 5px;" class="text-center">';
-  content+='<div class="col-xs-12" style="width: 90%;float: right;margin-right:2%;border-top: 1px solid #aaa;position: relative">'
-  content += '<span style="position: absolute;left: -28px;top: -10px;z-index: 999999999;background-color: rgb(8,46,83)">120 </span>'
-  content += '<span style="position: absolute;left: 26.5%;top:0;z-index: 999999999;">历史</span>'
-  content += '<span style="position: absolute;left: 76%;top:0;z-index: 999999999;">预测</span>'
-  content+= ' </div>'
-  content += ' <div class="col-xs-12 " style="height: 8vh;padding-top: 15px;position:relative">';
-  content+='<div style="position:absolute;width:30%;right:4%;z-index:99999999;bottom:0;height:8vh;background-color:rgba(255,255,255,0.1)"></div>'
-  content += '  <div class="col-xs-8" style="padding:0;height: 8vh;line-height: 8vh;padding-left: 10px" id="main1"></div>';
-  content += '  <div class="col-xs-4" style="padding:0;height: 8vh;line-height: 8vh;" id="main2"></div>';
-  content += '  </div>';
-  content+='<div class="col-xs-12" style="width: 90%;float: right;margin-right:2%;border-bottom: 1px solid #aaa;position: relative">'
-  content+='<div class="col-xs-12" style="height:5px;overflow:hidden;position: absolute">'
-  content += '<span style="position: absolute;left: 11.5%;top: -10px;z-index: 99999;">|</span>'
-  content += ' <span style="position: absolute;left: 40%;top: -10px;z-index: 99999;">|</span>'
-  content += ' <span style="position: absolute;left: 75.5%;top:-10px;z-index: 99999;">|</span>'
-  content+= ' </div>'
-  content += ' <span style="position: absolute;left: -28px;top: -10px;z-index: 999999999;">&nbsp;&nbsp;0</span>'
-  content += '<span style="position: absolute;left: 11%;top: 2px;z-index: 999999999;">02-14</span>'
-  content += ' <span style="position: absolute;left: 40%;top: 2px;z-index: 999999999;">12:00</span>'
-  content += ' <span style="position: absolute;left: 75%;top:2px;z-index: 999999999;">02-15</span>'
-  content+= ' </div>'
-  content += '  </div>';
-  content += '  <div>';
-  content += '  <div class="window_info_after1"></div>';
-  content += '  <div class="window_info_after2"></div>';
-  content += '  </div>';
-  content += ' </div>';
-    var p = e.target;
-    var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
-    var infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象
-    map.openInfoWindow(infoWindow, point); //开启信息窗口
+
+  var curentdate = getCurentDate(data_info[i][10])
+  var afterdate = getAfterDate(data_info[i][10])
+  var _time = () => {
+    var dateee = new Date().toJSON()
+    return new Date(+new Date(dateee) + 8 * 3600 * 1000)
+        .toISOString()
+        .replace(/T/g, " ")
+        .replace(/\.[\d]{3}Z/, "");
+  }
+  getCityData(isRealTime, {
+    cityName: data_info[i][2],
+    // cityName: '石家庄市',
+    time: _time,
+    // _time: '2019-04-18 16:00:00',
+    // areaId变为cityId   非比传参数（当点击城市详情时，为必传参数）  格式： 130100 (stationId改为pointID没有体现)
+    // cityId: data_info[i][12]
+    // areaId: 130100
+    cityId: 130100,
+    pointId:100557
+  }).then(res => {
+    const cityData = res.data
+    console.log(111111111111111111)
+    console.log(res.data)
+    console.log(11111111111111111)
+    yuceChartsData = res.data['36hour'].yuce.map(item => {
+      return item.AQI
+    })
+    hisChartsData = res.data['36hour'].hist.map(item => {
+
+      return item.aqi
+    })
+    // 时间格式转换 -- 取值日期
+    function getdata(time){
+      var dateee = new Date(time).toJSON();
+      var date = new Date(+new Date(dateee)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'')
+      return date.substring(0,10);
+    }
+    // 时间格式转换 -- 取值日期
+    function getdataechart(time){
+      var dateee = new Date(time).toJSON();
+      var date = new Date(+new Date(dateee)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'')
+      return date.substring(5,10);
+    }
+    // 时间格式转换 -- 取值小时
+    function gettime(time){
+      var dateee = new Date(time).toJSON();
+      var date = new Date(+new Date(dateee)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'')
+      return date.substring(11,16);
+    }
+    content += '<div class="window_info " style="width: 380px;border-radius:5px;overflow: hidden;padding: 10px 0;border: 1px solid rgb(2,161,231);background-color: rgb(8,46,83);color: #fff">';
+    content += '<div class="col-xs-12" style="height: 3vh;line-height: 3vh;font-size: 2vh;">城市详情<span class="pull-right cityInfo_close" onclick="map.closeInfoWindow()" style="margin-top:-10px;margin-right:-5px;font-size: 18px">×</span></div>';
+    content += '<div class="text-center">';
+    content += '<div class="transborder" style="overflow: hidden;height: 6.5vh">';
+    content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 8px">';
+    content += '<div class=" dark dark_num">';
+    content += '<div class="" style="height: 3vh;line-height: 3vh;font-size: 1vh">' + data_info[i][2] + '</div>';
+    content += '<div class="" style="height: 3vh;line-height: 3vh;">' +getdata(res.data.daqi.time) + '</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 4px">';
+    content += '<div class=" dark">';
+      var aqiColor = getAqiColorByNum(cityData.daqi.aqi)
+    content += '<div class="" style="height: 3vh;line-height: 3vh;background-color:'+aqiColor+';">AQI</div>';
+    content += '<div class="window_num dark_num" style="height: 3vh;line-height: 3vh;">'+ cityData.daqi.aqi +'</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '<div class="col-xs-4 transborder" style="height: 6vh;padding: 0 8px">';
+    content += '<div class=" dark">';
+    content += '<div class="" style="height: 3vh;line-height: 3vh;">综合指数</div>';
+    content += '<div class="window_num dark_num" style="height: 3vh;line-height: 3vh;">'+ res.data.daqi.complex_index +'</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '<div class="" style="margin-top: 5px;overflow: hidden">';
+    content += '<div class="col-xs-4  transborder" style="height: 6.5vh;padding: 0 8px">';
+    content += '<div class="col-xs-6 dark " style="height: 6vh;padding-right: 3px">';
+    content += '<div style="">';
+    var pm25Color = getPM25ColorByNum(cityData.daqi.pm2_5)
+    content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+pm25Color+';">PM2.5</div>';
+    content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ cityData.daqi.pm2_5 +'</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '<div class="col-xs-6 dark " style="height: 6vh;padding-left: 3px;>';
+    content += '<div style="">';
+    var pm10Color = getPM10ColorByNum(cityData.daqi.pm10)
+    content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+pm10Color+';">PM10</div>';
+    content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ cityData.daqi.pm10 +'</div>';
+    content += '</div>';
+    // content += '</div>';
+    content += '</div>';
+    content += '<div class="col-xs-4 transborder" style="height: 6.5vh;padding: 0 4px">';
+    content += '<div class="col-xs-6 dark" style="height: 6vh;padding-right: 3px">';
+    content += '<div style="">';
+    var so2Color = getso2ColorByNum(isRealTime,cityData.daqi.so2)
+    content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+so2Color+';">SO2</div>';
+    content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ cityData.daqi.so2 +'</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '<div class="col-xs-6 dark " style="height: 6vh;padding-left: 3px">';
+    content += '<div style="">';
+    var no2Color = getno2ColorByNum(isRealTime,cityData.daqi.no2)
+    content += '<div class="" style="height: 3vh;line-height: 3vh;background-color:'+no2Color+';">NO2</div>';
+    content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ cityData.daqi.no2 +'</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '<div class="col-xs-4 transborder" style="height: 6.5vh;padding: 0 8px">';
+    content += '<div class="col-xs-6 dark" style="height: 6vh;padding-right: 3px">';
+    content += '<div style="">';
+    var coColor = getcoColorByNum(isRealTime,cityData.daqi.co)
+    content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+coColor+';">CO</div>';
+    content += '<div class=" dark_num" style="height: 3vh;line-height: 3vh;">'+ cityData.daqi.co +'</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '<div class="col-xs-6 dark" style="height: 6vh;padding-left: 3px">';
+    content += '<div style="">';
+    var o3Color = geto3ColorByNum(isRealTime,cityData.daqi.o3)
+    content += '<div class=" " style="height: 3vh;line-height: 3vh;background-color:'+o3Color+';">O3</div>';
+    content += '<div class="dark_num" style="height: 3vh;line-height: 3vh;">'+ cityData.daqi.o3 +'</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '<div style="height: 6.5vh;margin-top: 5px;" class="text-center">';
+    content += '<div class="col-xs-4 " style="height: 6vh;padding: 0 8px">';
+    content += '<div class=" dark dark_num" style="height: 6vh;line-height: 6vh;font-size: 2vh"><i class="fa fa-thermometer-three-quarters"></i> '+`${cityData.weather?cityData.weather.temp:'0'}`+'℃</div>';
+    content += '</div>';
+    content += '<div class="col-xs-4 " style="height: 6vh;padding: 0 4px">';
+    content += ' <div class="" >';
+    content += ' <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-tint"></i> 湿度 ' + `${cityData.weather?cityData.weather.humi:'0'}` +'%</div>';
+    content += ' <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-signal"></i> 风速 '+ `${cityData.weather?cityData.weather.c2_wind_speed:'0'}`+'km/h</div>';
+    content += ' </div>';
+    content += ' </div>';
+    content += ' <div class="col-xs-4 " style="height: 6vh;padding: 0 8px">';
+    content += '  <div class="">';
+    content += '  <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-send-o"></i> '+ `${cityData.weather?cityData.weather.c2_wind_direction:'0'}` +'</div>';
+    content += ' <div class="" style="height: 3vh;line-height: 3vh;"><i class="fa fa-superpowers"></i> 风力 '+ `${cityData.weather?cityData.weather.windLevel:'0'}`+'级</div>';
+    content += ' </div>';
+    content += '  </div>';
+    content += '  </div>';
+    content += '  <div style="height:15px;line-height:15px;text-align:center">最近及未来二十四小时AQI变化曲线</div>';
+    content += '  <div style="height: 10.5vh;margin-top: 5px;" class="text-center">';
+    content+='<div class="col-xs-12" style="width: 90%;float: right;margin-right:2%;border-top: 1px solid #aaa;position: relative">'
+    content += '<span style="position: absolute;left: -28px;top: -10px;z-index: 999999999;background-color: rgb(8,46,83)" id="maxvalue">120 </span>'
+    content += '<span style="position: absolute;left: 26.5%;top:0;z-index: 999999999;">历史</span>'
+    content += '<span style="position: absolute;left: 76%;top:0;z-index: 999999999;">预测</span>'
+    content+= ' </div>'
+    content += ' <div class="col-xs-12 " style="height: 8vh;padding-top: 15px;position:relative">';
+    content+='<div style="position:absolute;width:30%;right:4%;z-index:99999999;bottom:0;height:8vh;background-color:rgba(255,255,255,0.1)"></div>'
+    content += '  <div class="col-xs-8" style="padding:0;height: 8vh;line-height: 8vh;padding-left: 10px" id="main1"></div>';
+    content += '  <div class="col-xs-4" style="padding:0;height: 8vh;line-height: 8vh;" id="main2"></div>';
+    content += '  </div>';
+    content+='<div class="col-xs-12" style="width: 90%;float: right;margin-right:2%;border-bottom: 1px solid #aaa;position: relative">'
+    content+='<div class="col-xs-12" style="height:5px;overflow:hidden;position: absolute;padding: 0">'
+    content += '<span style="position: absolute;left: 0;top: -10px;z-index: 99999;">|</span>'
+    content += '<span style="position: absolute;left: 23.5%;top: -10px;z-index: 99999;">|</span>'
+    content += '<span style="position: absolute;left: 45.5%;top: -10px;z-index: 99999;">|</span>'
+
+    content += ' <span style="position: absolute;left: 60.5%;top:-10px;z-index: 99999;">|</span>'
+    content += ' <span style="position: absolute;left: 75.5%;top:-10px;z-index: 99999;">|</span>'
+    content += ' <span style="position: absolute;left: 92%;top:-10px;z-index: 99999;">|</span>'
+    content+= ' </div>'
+    content += ' <span style="position: absolute;left: -28px;top: -10px;z-index: 999999999;">&nbsp;&nbsp;0</span>'
+    content += ' <span style="position: absolute;left:0;top: 2px;z-index: 999999999;">'+getdataechart(res.data['36hour']['hist'][0]['time'])+'</span>'
+    content += ' <span style="position: absolute;left: 23%;top: 2px;z-index: 999999999;">'+gettime(res.data['36hour']['hist'][11]['time'])+'</span>'
+    content += ' <span style="position: absolute;left: 45%;top: 2px;z-index: 999999999;">'+gettime(res.data['36hour']['hist'][22]['time'])+'</span>'
+
+    content += ' <span style="position: absolute;left: 60%;top:2px;z-index: 999999999;">'+gettime(res.data['36hour']['yuce'][0]['riqi'])+'</span>'
+    content += ' <span style="position: absolute;left: 75%;top:2px;z-index: 999999999;">'+getdataechart(res.data['36hour']['yuce'][6]['riqi'])+'</span>'
+    content += ' <span style="position: absolute;left: 90%;top:2px;z-index: 999999999;">'+gettime(res.data['36hour']['yuce'][11]['riqi'])+'</span>'
+    content+= ' </div>'
+    content += '  </div>';
+    content += '  <div>';
+    content += '  <div class="window_info_after1"></div>';
+    content += '  <div class="window_info_after2"></div>';
+    content += '  </div>';
+    content += ' </div>';
+      var p = e.target;
+      var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+      var infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象
+      map.openInfoWindow(infoWindow, point); //开启信息窗口
+  })
+}
+
+function getCurentDate(date){
+  let dates=new Date(date)
+  let month = dates.getMonth() + 1<10?'0'+(dates.getMonth() + 1):dates.getMonth() + 1;
+
+  let strDate = dates.getDate()<10?'0'+dates.getDate():dates.getDate();
+  return month+"-"+strDate
+
+}
+function getAfterDate(date){
+  let dates=new Date(date)
+  dates.setDate(dates.getDate()+1)
+  let month = dates.getMonth() + 1<10?'0'+(dates.getMonth() + 1):dates.getMonth() + 1;
+
+  let strDate = dates.getDate()<10?'0'+dates.getDate():dates.getDate();
+  return month+"-"+strDate
 }
 
 // 右侧类型切换
 $(".content_left_bottom ul li,.content_left_bottom ol li").click(function () {
     $(this).addClass("liFocus");
     $(this).siblings().removeClass("liFocus");
-
 })
 
 // 右侧类型切换
@@ -967,7 +1090,6 @@ $(".right_sort_change .li").click(function () {
     $(this).siblings().removeClass("rightliFocus");
     if($(this).text() == '实况') {
       getDataRealTimeInfoList()
-
     } else {
       getDataTotalInfoList()
     }
@@ -999,6 +1121,7 @@ $(".select_are_done").click(function () {
 // 热门城市选择
 $("#city_change ul li").click(function () {
     let city = $(this).html();
+    console.log(city)
     $("#location_city").html(city);
     $("#city_change").hide();
 })
@@ -1402,6 +1525,7 @@ function bottom_scroll() {
     }else{
         linex=0;
     }
+    console.log(linex)
 }
 
 $(".play").click(function () {

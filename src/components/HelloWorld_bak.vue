@@ -91,10 +91,10 @@
               <div class="col-xs-3 whtitle">城市排名</div>
               <div class="col-xs-9 text-right">
                 <ul class="city_sort_change">
-                  <li class="liFocus">169</li>
-                  <li>2+26</li>
-                  <li>省</li>
-                  <li>县</li>
+                  <li :class="{liFocus: DD=='169'}" @click="DD = '169'">169</li>
+                  <li :class="{liFocus: DD=='2+26'}" @click="DD = '2+26'">2+26</li>
+                  <li :class="{liFocus: DD=='省'}" @click="DD = '省'">省</li>
+                  <li :class="{liFocus: DD=='县'}" @click="DD = '县'">县</li>
                 </ul>
               </div>
             </div>
@@ -679,8 +679,8 @@
                 1-17
               </div>
               <div class="col-xs-7">
-                <div class="footer_date1">昨日 <span class="red">320</span></div>
-                <div class="footer_date2">同期 <span class="red">320</span></div>
+                <div class="footer_date1"><span>昨日</span> <span class="red">320</span></div>
+                <div class="footer_date2"> <span>同期</span><span class="red">320</span></div>
               </div>
             </div>
             <div class="col-xs-1 ">
@@ -688,8 +688,8 @@
                 1-18
               </div>
               <div class="col-xs-7">
-                <div class="footer_date1">昨日 <span class="orange">320</span></div>
-                <div class="footer_date2">同期 <span class="red">320</span></div>
+                <div class="footer_date1"><span>昨日</span> <span class="orange">320</span></div>
+                <div class="footer_date2"><span>同期</span> <span class="red">320</span></div>
               </div>
             </div>
             <div class="col-xs-1 ">

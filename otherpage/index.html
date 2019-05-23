@@ -4,7 +4,11 @@
     <meta charset="utf-8">
     <title>指标调度</title>
     <link rel="stylesheet" href="index.css">
+
     <style>
+      .nav{
+        margin-top: 11vh;
+      }
         .main-left::-webkit-scrollbar
         {
             width: 8px;
@@ -25,16 +29,119 @@
             -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.1);
             background-color: #555;
         }
+      .city-list div{
+        display: inline-block;
+        position: relative;
+      }
+      .dell{
+        position: absolute;
+        width:17px;
+        height:17px;
+        text-align: center;
+        line-height: 10px;
+        top: 9px;
+        right:-13px;
+        color:#aaa;
+        border-radius: 50%;
+        background: rgba(0,0,0,.8);
+        font-size:1px;
+        cursor:pointer;
+      }
+      thead{
+        display: block;
+      }
+      tbody{
+        overflow-y: scroll;display: block;
+        margin-top:10px;
+        width:100%;
+      }
+  td{
+    position: relative;
+    padding: 2px 0;
+    vertical-align: middle!important;
+    white-space: nowrap;
+  }
+  td[title]{
+     cursor: pointer;
+  }
+        table tbody::-webkit-scrollbar { width: 3px;}
+        table tbody::-webkit-scrollbar-track{background-color:rgba(84, 167, 216,.4)}
+        table tbody::-webkit-scrollbar-thumb{background-color: rgba(84, 167, 216,1)
+        }
+        table tbody::-webkit-scrollbar-thumb:hover {background-color:rgba(84, 167, 216,1)}
+        table tbody::-webkit-scrollbar-thumb:active {background-color:rgba(84, 167, 216,1)}
 
+        .menu-ul {
+          margin-top: 15.46px;
+          padding: 0;
+          list-style: none;
+        }
+        li {
+          width: 24%;
+          font-size: 18px;
+          display: list-item;
+          text-align: -webkit-match-parent;
+          float: left;
+          border-right: 2px solid #999;
+          color: #fff;
+          line-height: 4vh;
+        }
+      li:last-child{
+        border: none;
+      }
+      .header{
+        width: 100%;
+        height: 7vh;
+        line-height: 6vh;
+        font-size: 4vh;
+        text-align: center;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 9;
+      }
+.border-bottom{
+  width: 5%;
+  height: 3px;
+  background-color: rgb(0, 171, 220);
+  position: absolute;
+  top: 7vh;
+  left: 0;
+  right: 0;
+  margin: auto;
+
+}
+.guanbi{
+  color:#fff;
+  width:10px;
+  height:10px;
+  line-height:11px;
+  background:rgba(0,0,0,.5);
+  border-radius: 50%;
+
+}
+      select{
+        color:#fff;
+      }
     </style>
 </head>
 <body>
+<div id="apps">
 <!--头部start-->
-<header class="header" style="">
-        <span style="" id="return_index">
-            <img src="img/logo.png" style="">
-            大气环境AR实景调度决策
-        </span>
+<header class="header" style="font-size: 4vh;">
+        <div style="display: inline-block" id="return_index"  @mousemove="handleMouseMove" @mouseleave="handleMouseLeave">
+            <img style="float: left" src="../static/images/logo.png" alt="">
+            <div style="float: left;color:white" >大气环境AR实景调度决策</div>
+        </div>
+  <div class="border-bottom"></div>
+  <div :style="[menu,menuTransition]"   @mousemove="handleMouseMove" @mouseleave="handleMouseLeave">
+    <ul class="menu-ul">
+      <li @click="dispatch_page()">调度</li>
+      <li>会商</li>
+      <li>数据服务</li>
+      <li>政策动态</li>
+    </ul>
+  </div>
 </header>
 <!--头部end-->
 
@@ -46,116 +153,264 @@
         <span ><a href="" style="text-decoration:none">超标调度</a></span>
     </div>
     <div class="nav_right" style="">
-        <span style="">更新于2019-01-21</span>
+        <span style="">更新于 {{ timesss }} </span>
     </div>
 </nav>
 <!--tab栏，更新时间end-->
+  <div class="likediv" id="addCityInfo" :style="[addCityStyle,hideStlye,CityPosition]"
+  >
+    <div style="width:90%;display: flex;flex-direction: row;justify-content: space-around;margin-top: 10px">
+      <select id="selectionCityNum" @change="cityChange" style="width: 90%;height: 38px;margin-top: 10px;background: #295179;border:none;border-radius: 4px" >
+        <option value="">选择添加关心城市...</option>
+        <option v-for="item of partments" :value="item.id"
+                style="color: #f5f5f5;height: 37px;background: #033361">
+          {{item.name}}
+        </option>
+      </select>
 
+    </div>
+    <div class="city-list" style="margin-top: 16px">
+      <div style="color: #01d8d0;font-size: 20px;padding-left: 15px;padding-top: 16px;position: relative"
+           v-for="(city,index) of caresCities" :key="city.id">{{city.name}}<span class="dell"  @click="deleteCity(index)">x</span></div>
+    </div>
+    <button @click="configCity" style="font-size:16px;border-radius:6px;position: absolute;left: 15px;bottom:20px;width: 66px;height: 32px;color: #fff;border: 1px solid #00c6ff;background: #033361">确定</button>
+    <div class="guanbi" @click="closeAddCity" style="position: absolute;right: 5px;top:0;cursor:pointer;">x</div>
+  </div>
+  <div class="likediv" id="addCityInfo1" :style="[addCityStyle,hideStlye1,CityPosition1]"
+  >
+    <div style="width:90%;display: flex;flex-direction: row;justify-content: space-around;margin-top: 10px">
+      <select id="selectionCityNum1" @change="cityChange1" style="width: 90%;height: 38px;margin-top: 10px;background: #295179;border:none;border-radius: 4px" >
+        <option value="">选择添加关心城市...</option>
+        <option v-for="item of partments" :value="item.id"
+                style="color: #f5f5f5;height: 37px;background: #033361">
+          {{item.name}}
+        </option>
+      </select>
+
+    </div>
+    <div class="city-list" style="margin-top: 16px">
+      <div style="color: #01d8d0;font-size: 20px;padding-left: 15px;padding-top: 16px"
+           v-for="city of caresCities1" :key="city.id">{{city.name}}<span class="dell"  @click="deleteCity1">x</span></div>
+    </div>
+    <button @click="configCity1" style="font-size:16px;border-radius:6px;position: absolute;left: 15px;bottom:20px;width: 66px;height: 32px;color: #fff;border: 1px solid #00c6ff;background: #033361">确定</button>
+    <div class="guanbi" @click="closeAddCity1" style="position: absolute;right: 5px;top:0;color:#fff;cursor:pointer;">x</div>
+  </div>
+  <div class="likediv" id="addCityInfo2" :style="[addCityStyle,hideStlye2,CityPosition2]">
+    <div style="width:90%;display: flex;flex-direction: row;justify-content: space-around;margin-top: 10px">
+      <select id="selectionCityNum2" @change="cityChange2" style="width: 90%;height: 38px;margin-top: 10px;background: #295179;border:none;border-radius: 4px" >
+        <option value="">选择添加关心城市...</option>
+        <option v-for="item of partments" :value="item.id "
+                style="color: #f5f5f5;height: 37px;background: #033361">
+          {{item.name}}
+        </option>
+      </select>
+
+    </div>
+    <div class="city-list" style="margin-top: 16px">
+      <div style="color: #01d8d0;font-size: 20px;padding-left: 15px;padding-top: 16px"
+           v-for="city of caresCities2" :key="city.id">{{city.name}}<span class="dell"  @click="deleteCity2">x</span></div>
+    </div>
+    <button @click="configCity2" style="font-size:16px;border-radius:6px;position: absolute;left: 15px;bottom:20px;width: 66px;height: 32px;color: #fff;border: 1px solid #00c6ff;background: #033361">确定</button>
+    <div class="guanbi" @click="closeAddCity2" style="position: absolute;right: 5px;top:0;color:#fff;cursor:pointer;">x</div>
+  </div>
+  <div class="likediv" id="addCityInfo3" :style="[addCityStyle,hideStlye3,CityPosition3]">
+    <div style="width:90%;display: flex;flex-direction: row;justify-content: space-around;margin-top: 10px">
+      <select id="selectionCityNum3" @change="cityChange3" style="width: 90%;height: 38px;margin-top: 10px;background: #295179;border:none;border-radius: 4px" >
+        <option value="">选择添加关心城市...</option>
+        <option v-for="item of partments" :value="item.id "
+                style="color: #f5f5f5;height: 37px;background: #033361">
+          {{item.name}}
+        </option>
+      </select>
+
+    </div>
+    <div class="city-list" style="margin-top: 16px">
+      <div style="color: #01d8d0;font-size: 20px;padding-left: 15px;padding-top: 16px"
+           v-for="city of caresCities3" :key="city.id">{{city.name}}<span class="dell"  @click="deleteCity3">x</span></div>
+    </div>
+    <button @click="configCity3" style="font-size:16px;border-radius:6px;position: absolute;left: 15px;bottom:20px;width: 66px;height: 32px;color: #fff;border: 1px solid #00c6ff;background: #033361">确定</button>
+    <div class="guanbi" @click="closeAddCity3" style="position: absolute;right: 5px;top:0;color:#fff;cursor:pointer;">x</div>
+  </div>
 <!--主体start-->
 <div id="dispatch">
     <!--左侧内容-->
     <div class="dispatch_left" style="">
         <!--累计浓度值-->
         <div style="height: 450px;">
-            <div style="width: 97%;height: 48px;border-bottom: 1px solid #aaa">
+            <div style="width: 97%;height: 48px;border-bottom: 1px solid #aaa;position:relative">
                 <div style="float: left">
-                    <span style="font-size: 30px;color: #f5f5f5">{{infosmsg}}</span>
+                    <span style="font-size: 30px;color: #f5f5f5" v-html="infosmsg"></span>
                 </div>
-                <div style="float: right;padding-top: 15px;margin-right: 30px">
-                    <img src="img/heart.png" title="设置关心城市" style="cursor: pointer" class="like">
-                    <img src="img/placementUp.png" style="padding-left: 22px;cursor: pointer" title="置顶" @click="comprehensive()">
+                <div style="float: right;padding-top: 5px;margin-right: 30px">
+                    <img src="img/heart.png" title="设置关心城市" style="cursor: pointer" class="like" @click="showCareCity(infos,infosmsg)">
+                    <img src="img/placementUp.png" style="padding-left: 22px;cursor: pointer" title="将此表格置顶" >
                 </div>
+              <div style="width:180px;height:3px;background: #aaa;position: absolute;left:0;bottom:0"></div>
                 <!--关心城市-->
-               <!-- <div class="likediv" style="display:none;width: 316px;height: 196px;background: #033361;border: 1px solid #00c6ff;z-index: 888;position: absolute;left:43.5%;top: 30%;border-radius: 6px">
-                    <div>
-                        <select style="width: 234px;height: 38px;margin-top: 10px;margin-left: 14px;background: #295179;border:none;border-radius: 4px">
-                            <option style="color: #f5f5f5;height: 37px;background: #033361">请选择关心城市</option>
-                            <option style="color: #f5f5f5;height: 37px;background: #033361">请选择关心城市</option>
-                            <option style="color: #f5f5f5;height: 37px;background: #033361">请选择关心城市</option>
-                            <option style="color: #f5f5f5;height: 37px;background: #033361">请选择关心城市</option>
-                        </select>
-                    </div>
-                    <div style="margin-top: 16px">
-                        <span style="color: #01d8d0;font-size: 20px;padding-left: 15px;padding-top: 16px">石家庄</span>
-                        <span style="color: #01d8d0;font-size: 20px;padding-left: 10px;padding-top: 16px">邢台</span>
-                        <span style="color: #01d8d0;font-size: 20px;padding-left: 10px;padding-top: 16px">北京</span>
-                    </div>
-                    <button style="font-size:16px;border-radius:6px;position: absolute;left: 15px;bottom:20px;width: 66px;height: 32px;color: #fff;border: 1px solid #00c6ff;background: #033361">确定</button>
-                    <span class="guanbi" style="position: absolute;right: 0;bottom: 0">X</span>
-                </div>-->
+
             </div>
             <!--表格-->
-            <div class="main-left" style="height: 366px;margin-top: 16px;width: 95%;overflow-y:scroll;">
-                <table style="font-size: 18px;color: #54a7d8;cursor: pointer;">
-                    <tr v-if="code == '1'">
-                        <td width="100">&nbsp;排序</td>
-                        <td  width="100">&nbsp;城市</td>
-                        <td  width="100" >浓度<img src="img/sort.png" style="display: inline-block;height: 14px" ></td>
-                        <td  width="100">变化率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td  width="100">&nbsp;目标</td>
-                        <td  width="100">完成率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td  width="100">控制值<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td  width="100">三年平均<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td  width="100">难度评估<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                    </tr>
-                    <tr v-if="code == '2' || code == '3'">
-                        <td width="100">&nbsp;排序</td>
-                        <td width="100">&nbsp;城市</td>
-                        <td width="100">&nbsp;综合指数</td>
-                        <td width="100">&nbsp;PM<span style="font-size: 10px">2.5</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;PM<span style="font-size: 10px">10</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;SO<span style="font-size: 10px">2</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;NO<span style="font-size: 10px">2</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;CO<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;O<span style="font-size: 10px">3</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                    </tr>
+            <div class="main-left" style="height: 366px;margin-top: 16px;width: 95%;">
+              <div class="content-wrapper">
 
-                    <tr v-if="code == '1'" v-for="info in infos" >
-                        <td width="100">&nbsp;{{info.sortId}}</td>
-                        <td width="100">&nbsp;{{info.simple_city_name}}</td>
-                        <td width="100">&nbsp;{{info.pm25}}</td>
-                        <td width="100">&nbsp;{{info.rateOfChange}}<!--<img src="up.png" style="display: inline-block;height: 18px">--></td>
-                        <td width="100;text-align: center">&nbsp;{{info.pm25Target}}</td>
-                        <td width="100" title="完成率100%">&nbsp;{{info.completion}}</td>
-                        <td width="100">&nbsp;{{info.controlVal}}</td>
-                        <td width="100">&nbsp;{{info.threeYearAvange}}</td>
-                        <td width="100">&nbsp;<!--<img src="hh.png" style="display: inline-block;height: 18px">-->{{info.difficultyAssessment}}</td>
-                    </tr>
-                    <tr v-if="code == '2'" v-for="gexian in infos">
-                        <td width="100">&nbsp;{{gexian.sortId}}</td>
-                        <td width="100">&nbsp;{{gexian.city_name}}</td>
-                        <td width="100">&nbsp;{{gexian.composite_index}}</td>
-                        <td width="100">&nbsp;{{gexian.pm25}}</td>
-                        <td width="100">&nbsp;{{gexian.pm10}}</td>
-                        <td width="100">&nbsp;{{gexian.so2}}</td>
-                        <td width="100">&nbsp;{{gexian.no2}}</td>
-                        <td width="100">&nbsp;{{gexian.co}}</td>
-                        <td width="100">&nbsp;{{gexian.o3}}</td>
-                    </tr>
-                    <tr v-if="code == '3'" v-for="gexian in infos">
-                        <td width="100">&nbsp;{{gexian.sortId}}</td>
-                        <td width="100">&nbsp;{{gexian.area_name}}</td>
-                        <td width="100">&nbsp;{{gexian.composite_index}}</td>
-                        <td width="100">&nbsp;{{gexian.pm25}}</td>
-                        <td width="100">&nbsp;{{gexian.pm10}}</td>
-                        <td width="100">&nbsp;{{gexian.so2}}</td>
-                        <td width="100">&nbsp;{{gexian.no2}}</td>
-                        <td width="100">&nbsp;{{gexian.co}}</td>
-                        <td width="100">&nbsp;{{gexian.o3}}</td>
-                    </tr>
+                <table v-if="infos.type==0" style="font-size: 18px;color: #54a7d8;">
+                  <thead>
+                  <tr >
+                    <!--v-if="code == '1'"-->
+                    <td width="100">&nbsp;排序</td>
+                    <td  width="100">&nbsp;城市</td>
+                    <td  width="100" >浓度
+                      <img :src="isSortUp&&acIndex==1?upSrc:upSrc1"
+                           :style="arrowUp" @click="ArraySortByObj1(infos.data,'pm25',1)">
+                      <img :src="isSortDown&&acIndex==1?downSrc:downSrc1"
+                           :style="arrowDown" @click="ArraySortByObj2(infos.data,'pm25',1)">
+                    </td>
+                    <td  width="100" >变化率<img :src="isSortUp&&acIndex==2?upSrc:upSrc1"
+                                              :style="arrowUp" @click="ArraySortByObj1(infos.data,'rate_of_change',2)">
+                                           <img :src="isSortDown&&acIndex==2?downSrc:downSrc1"
+                                                :style="arrowDown" @click="ArraySortByObj2(infos.data,'rate_of_change',2)"></td>
+                    <td  width="100">&nbsp;目标</td>
+                    <td  width="100">完成率
+                      <img :src="isSortUp&&acIndex==3?upSrc:upSrc1"
+                           :style="arrowUp" @click="ArraySortByObj1(infos.data,'completion',3)">
+                      <img :src="isSortDown&&acIndex==3?downSrc:downSrc1"
+                           :style="arrowDown" @click="ArraySortByObj2(infos.data,'completion',3)">
+                    </td>
+                    <td  width="100" >控制值
+                      <img :src="isSortUp&&acIndex==4?upSrc:upSrc1"
+                           :style="arrowUp" @click="ArraySortByObj1(infos.data,'control_val',4)">
+                      <img :src="isSortDown&&acIndex==4?downSrc:downSrc1"
+                           :style="arrowDown" @click="ArraySortByObj2(infos.data,'control_val',4)">
+                    </td>
+                    <td  width="100" >三年平均
+                    <img :src="isSortUp&&acIndex==5?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos.data,'three_year_avange',5)">
+                    <img :src="isSortDown&&acIndex==5?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos.data,'three_year_avange',5)">
+                    </td>
+                    <td  width="100">难度评估
+                      <img :src="isSortUp&&acIndex==6?upSrc:upSrc1"
+                           :style="arrowUp" @click="ArraySortByObj1(infos.data,'difficulty_assessment',6)">
+                      <img :src="isSortDown&&acIndex==6?downSrc:downSrc1"
+                           :style="arrowDown" @click="ArraySortByObj2(infos.data,'difficulty_assessment',6)">
+                   </td>
+                  </tr>
+                  </thead>
+                  <tbody style="height: 350px;">
+                  <tr  v-for="info in topcities" :style="gaoliang">
+                    <!--v-if="code == '1'"-->
+                    <td width="100">&nbsp;{{info.sortId||'-'}}</td>
+                    <td width="100">&nbsp;{{info.city_name||'-'}}</td>
+                    <td width="100">&nbsp;{{info.pm25||'-'}}</td>
+                    <td width="100">&nbsp;{{info.rate_of_change||'-'}}<img :src="info.rate_of_change.indexOf('-')>-1?'./img/up.png':'img/down.png'" style="display: inline-block;height: 18px"></td>
+                    <td width="100;text-align: center">&nbsp;{{info.pm25_target||'-'}}</td>
+                    <td width="100" :title="'完成率'+info.completion">&nbsp;{{info.completion||'-'}}</td>
+                    <td width="100">&nbsp;{{info.control_val||'-'}}</td>
+                    <td width="100">&nbsp;{{info.three_year_avange||'-'}}</td>
+                    <td width="100">{{info.difficulty_assessment ||'-'}}</td>
+                  </tr>
+                  <tr  v-for="info in infos.data" >
+                    <!--v-if="code == '1'"-->
+                    <td width="100">&nbsp;{{info.sortId||'-'}}</td>
+                    <td width="100">&nbsp;{{info.city_name||'-'}}</td>
+                    <td width="100">&nbsp;{{info.pm25||'-'}}</td>
+                    <td width="100">&nbsp;{{info.rate_of_change||'-'}}<img :src="info.rate_of_change.indexOf('-')>-1?'./img/up.png':'img/down.png'" style="display: inline-block;height: 18px"></td>
+                    <td width="100;text-align: center">&nbsp;{{info.pm25_target||'-'}}</td>
+                    <td width="100" :title="'完成率'+info.completion">&nbsp;{{info.completion||'-'}}</td>
+                    <td width="100">&nbsp;{{info.control_val||'-'}}</td>
+                    <td width="100">&nbsp;{{info.three_year_avange||'-'}}</td>
+                    <td width="100">{{info.difficulty_assessment ||'-'}}</td>
+                  </tr>
+                  </tbody>
                 </table>
+
+                <table v-else style="font-size: 18px;color: #54a7d8">
+                 <thead >
+                 <tr>
+                   <td width="100">&nbsp;排序</td>
+                   <td width="100">&nbsp;城市</td>
+                   <td width="100">综合指数
+                     <img :src="isSortUp&&acIndex==50?upSrc:upSrc1"
+                                                  :style="arrowUp" @click="ArraySortByObj1(infos.data,'composite_index',50)"/>
+                     <img :src="isSortDown&&acIndex==50?downSrc:downSrc1"
+                          :style="arrowDown" @click="ArraySortByObj2(infos.data,'composite_index',50)"/></td>
+                   <td width="100" >&nbsp;PM<span style="font-size: 10px">2.5</span>
+                     <img :src="isSortUp&&acIndex==7?upSrc:upSrc1"
+                          :style="arrowUp" @click="ArraySortByObj1(infos.data,'pm25',7)">
+                     <img :src="isSortDown&&acIndex==7?downSrc:downSrc1"
+                          :style="arrowDown" @click="ArraySortByObj2(infos.data,'pm25',7)">
+                   </td>
+                   <td width="100">&nbsp;PM<span style="font-size: 10px">10</span>
+                     <img :src="isSortUp&&acIndex==8?upSrc:upSrc1"
+                          :style="arrowUp" @click="ArraySortByObj1(infos.data,'pm10',8)">
+                     <img :src="isSortDown&&acIndex==8?downSrc:downSrc1"
+                          :style="arrowDown" @click="ArraySortByObj2(infos.data,'pm10',8)">
+                   </td>
+                   <td width="100">&nbsp;SO<span style="font-size: 10px">2</span>
+                     <img :src="isSortUp&&acIndex==9?upSrc:upSrc1"
+                          :style="arrowUp" @click="ArraySortByObj1(infos.data,'so2',9)">
+                     <img :src="isSortDown&&acIndex==9?downSrc:downSrc1"
+                          :style="arrowDown" @click="ArraySortByObj2(infos.data,'so2',9)"></td>
+                   <td width="100">&nbsp;NO<span style="font-size: 10px">2</span>
+                     <img :src="isSortUp&&acIndex==10?upSrc:upSrc1"
+                          :style="arrowUp" @click="ArraySortByObj1(infos.data,'no2',10)">
+                     <img :src="isSortDown&&acIndex==10?downSrc:downSrc1"
+                          :style="arrowDown" @click="ArraySortByObj2(infos.data,'no2',10)"></td>
+                   <td width="100">&nbsp;CO
+                     <img :src="isSortUp&&acIndex==11?upSrc:upSrc1"
+                          :style="arrowUp" @click="ArraySortByObj1(infos.data,'co',11)">
+                     <img :src="isSortDown&&acIndex==11?downSrc:downSrc1"
+                          :style="arrowDown" @click="ArraySortByObj2(infos.data,'co',11)"></td>
+                   <td width="100">&nbsp;O<span style="font-size: 10px">3</span>
+                     <img :src="isSortUp&&acIndex==13?upSrc:upSrc1"
+                          :style="arrowUp" @click="ArraySortByObj1(infos.data,'o3',12)">
+                     <img :src="isSortDown&&acIndex==13?downSrc:downSrc1"
+                          :style="arrowDown" @click="ArraySortByObj2(infos.data,'o3',12)"></td>
+                   </td>
+                 </tr>
+                 </thead>
+                 <tbody style="height: 350px">
+                 <!--关心城市，排名在前高亮 -->
+                 <tr   v-for="gexian in topcities" :style="gaoliang">
+                   <!--v-if="code == '1' || code == '2'"-->
+                   <td width="100">&nbsp;{{gexian.sortId||'-' }}</td>
+                   <td width="100">&nbsp;{{gexian.city_name||gexian.area_name||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.composite_index||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.pm25||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.pm10||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.so2||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.no2||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.co||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.o3||'-'}}</td>
+                 </tr>
+                  <tr   v-for="gexian in infos.data">
+                    <!--v-if="code == '1' || code == '2'"-->
+                    <td width="100">&nbsp;{{gexian.sortId||'-'}}</td>
+                    <td width="100">&nbsp;{{gexian.city_name||gexian.area_name||'-'}}</td>
+                    <td width="100">&nbsp;{{gexian.composite_index||'-'}}</td>
+                    <td width="100">&nbsp;{{gexian.pm25||'-'}}</td>
+                    <td width="100">&nbsp;{{gexian.pm10||'-'}}</td>
+                    <td width="100">&nbsp;{{gexian.so2||'-'}}</td>
+                    <td width="100">&nbsp;{{gexian.no2||'-'}}</td>
+                    <td width="100">&nbsp;{{gexian.co||'-'}}</td>
+                    <td width="100">&nbsp;{{gexian.o3||'-'}}</td>
+                  </tr>
+                 </tbody>
+                </table>
+              </div>
+
             </div>
         </div>
 
         <!--各县区年综合指数排名-->
         <div style="height: 500px;">
-            <div style="width: 97%;height: 48px;border-bottom: 1px solid #aaa">
+            <div style="width: 97%;height: 48px;border-bottom: 1px solid #eee;position: relative">
                 <div style="float: left">
-                    <span style="font-size: 30px;color: #f5f5f5">{{infosmsg1}}</span>
+                    <span style="font-size: 30px;color: #f5f5f5" v-html="infosmsg1"></span>
                 </div>
-                <div style="float: right;padding-top: 15px;margin-right: 30px">
-                    <img src="img/heart.png" title="设置关心城市" style="cursor: pointer" class="like">
-                    <img src="img/placementUp.png" style="padding-left: 22px;cursor: pointer" title="置顶" @click="upAQI()" >
+                <div style="float: right;padding-top: 5px;margin-right: 30px">
+                    <img src="img/heart.png" title="设置关心城市" style="cursor: pointer" class="like"  @click="showCareCity1(infos1,infosmsg1)">
+                    <img src="img/placementUp.png" style="padding-left: 22px;cursor: pointer" title="将此表格置顶" @click="info1exchangeToTop(infos1,infosmsg1)" >
                 </div>
                 <!--<div class="likediv" style="display:none;width: 316px;height: 196px;background: #033361;border: 1px solid #00c6ff;z-index: 888;position: absolute;left:43.5%;top: 30%;border-radius: 6px">
                     <div>
@@ -174,45 +429,155 @@
                     <button style="font-size:16px;border-radius:6px;position: absolute;left: 15px;bottom:20px;width: 66px;height: 32px;color: #fff;border: 1px solid #00c6ff;background: #033361">确定</button>
                     <span class="guanbi" style="position: absolute;right: 0;bottom: 0">X</span>
                 </div>-->
+              <div style="width:180px;height:3px;background: #aaa;position: absolute;left:0;bottom:0"></div>
             </div>
 
             <!--表格-->
-            <div class="main-left" style="height: 366px;margin-top: 16px;width: 95%;overflow-y:scroll;">
-                <table style="font-size: 18px;color: #54a7d8">
+            <div class="main-left" style="height: 366px;margin-top: 16px;width: 95%;">
+                <table v-if="infos1.type==0" style="font-size: 18px;color: #54a7d8;">
+                <thead>
+                <tr >
+                  <!--v-if="code == '1'"-->
+                  <td width="100">&nbsp;排序</td>
+                  <td  width="100">&nbsp;城市</td>
+                  <td  width="100" >浓度
+                    <img :src="isSortUp&&acIndex==13?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos1.data,'pm25',13)">
+                    <img :src="isSortDown&&acIndex==13?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos1.data,'pm25',13)">
+                  </td>
+                  <td  width="100" >变化率<img :src="isSortUp&&acIndex==14?upSrc:upSrc1"
+                                            :style="arrowUp" @click="ArraySortByObj1(infos1.data,'rate_of_change',14)">
+                    <img :src="isSortDown&&acIndex==14?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos1.data,'rate_of_change',14)"></td>
+                  <td  width="100">&nbsp;目标</td>
+                  <td  width="100">完成率
+                    <img :src="isSortUp&&acIndex==15?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos1.data,'completion',15)">
+                    <img :src="isSortDown&&acIndex==15?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos1.data,'completion',15)">
+                  </td>
+                  <td  width="100" >控制值
+                    <img :src="isSortUp&&acIndex==16?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos1.data,'control_val',16)">
+                    <img :src="isSortDown&&acIndex==16?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos1.data,'control_val',16)">
+                  </td>
+                  <td  width="100" >三年平均
+                    <img :src="isSortUp&&acIndex==17?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos1.data,'three_year_avange',17)">
+                    <img :src="isSortDown&&acIndex==17?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos1.data,'three_year_avange',17)">
+                  </td>
+                  <td  width="100">难度评估
+                    <img :src="isSortUp&&acIndex==18?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos1.data,'difficulty_assessment',18)">
+                    <img :src="isSortDown&&acIndex==18?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos1.data,'difficulty_assessment',18)">
+                  </td>
+                </tr>
+                </thead>
+                <tbody style="height: 350px;">
+                <tr  v-for="info in topcities1" :style="gaoliang">
+                  <!--v-if="code == '1'"-->
+                  <td width="100">&nbsp;{{info.sortId||'-'}}</td>
+                  <td width="100">&nbsp;{{info.city_name||'-'}}</td>
+                  <td width="100">&nbsp;{{info.pm25||'-'}}</td>
+                  <td width="100">&nbsp;{{info.rate_of_change||'-'}}<img :src="info.rate_of_change.indexOf('-')>-1?'./img/up.png':'img/down.png'" style="display: inline-block;height: 18px"></td>
+                  <td width="100;text-align: center">&nbsp;{{info.pm25_target||'-'}}</td>
+                  <td width="100" :title="'完成率'+info.completion">&nbsp;{{info.completion||'-'}}</td>
+                  <td width="100">&nbsp;{{info.control_val||'-'}}</td>
+                  <td width="100">&nbsp;{{info.three_year_avange||'-'}}</td>
+                  <td width="100">&nbsp;<!--<img src="hh.png" style="display: inline-block;height: 18px">-->{{info.difficulty_assessment||'-'}}</td>
+                </tr>
+                <tr  v-for="info in infos1.data" >
+                  <!--v-if="code == '1'"-->
+                  <td width="100">&nbsp;{{info.sortId||'-'}}</td>
+                  <td width="100">&nbsp;{{info.city_name||'-'}}</td>
+                  <td width="100">&nbsp;{{info.pm25||'-'}}</td>
+                  <td width="100">&nbsp;{{info.rate_of_change||'-'}}<img :src="info.rate_of_change.indexOf('-')>-1?'./img/up.png':'img/down.png'" style="display: inline-block;height: 18px"></td>
+                  <td width="100;text-align: center">&nbsp;{{info.pm25_target||'-'}}</td>
+                  <td width="100" :title="'完成率'+info.completion">&nbsp;{{info.completion||'-'}}</td>
+                  <td width="100">&nbsp;{{info.control_val||'-'}}</td>
+                  <td width="100">&nbsp;{{info.three_year_avange||'-'}}</td>
+                  <td width="100">&nbsp;<!--<img src="hh.png" style="display: inline-block;height: 18px">-->{{info.difficulty_assessment||'-'}}</td>
+                </tr>
+                </tbody>
+              </table>
+                <table v-else style="font-size: 18px;color: #54a7d8">
+                  <thead>
                     <tr>
                         <td width="100">&nbsp;排序</td>
                         <td width="100">&nbsp;城市</td>
-                        <td width="100">&nbsp;综合指数</td>
-                        <td width="100">&nbsp;PM<span style="font-size: 10px">2.5</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;PM<span style="font-size: 10px">10</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;SO<span style="font-size: 10px">2</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;NO<span style="font-size: 10px">2</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;CO<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;O<span style="font-size: 10px">3</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">综合指数
+                          <img :src="isSortUp&&acIndex==51?upSrc:upSrc1"
+                               :style="arrowUp" @click="ArraySortByObj1(infos1.data,'composite_index',51)"/>
+                          <img :src="isSortDown&&acIndex==51?downSrc:downSrc1"
+                               :style="arrowDown" @click="ArraySortByObj2(infos1.data,'composite_index',51)"/>
+                        </td>
+                      <td width="100">&nbsp;PM<span style="font-size: 10px">2.5</span>
+                        <img :src="isSortUp&&acIndex==19?upSrc:upSrc1"
+                             :style="arrowUp" @click="ArraySortByObj1(infos1.data,'pm25',19)">
+                        <img :src="isSortDown&&acIndex==19?downSrc:downSrc1"
+                             :style="arrowDown" @click="ArraySortByObj2(infos1.data,'pm25',19)">
+                      </td>
+                      <td width="100">&nbsp;PM<span style="font-size: 10px">10</span>
+                        <img :src="isSortUp&&acIndex==20?upSrc:upSrc1"
+                             :style="arrowUp" @click="ArraySortByObj1(infos1.data,'pm10',20)">
+                        <img :src="isSortDown&&acIndex==20?downSrc:downSrc1"
+                             :style="arrowDown" @click="ArraySortByObj2(infos1.data,'pm10',20)">
+                      </td>
+                      <td width="100">&nbsp;SO<span style="font-size: 10px">2</span>
+                        <img :src="isSortUp&&acIndex==21?upSrc:upSrc1"
+                             :style="arrowUp" @click="ArraySortByObj1(infos1.data,'so2',21)">
+                        <img :src="isSortDown&&acIndex==21?downSrc:downSrc1"
+                             :style="arrowDown" @click="ArraySortByObj2(infos1.data,'so2',21)"></td>
+                      <td width="100">&nbsp;NO<span style="font-size: 10px">2</span>
+                        <img :src="isSortUp&&acIndex==22?upSrc:upSrc1"
+                             :style="arrowUp" @click="ArraySortByObj1(infos1.data,'no2',22)">
+                        <img :src="isSortDown&&acIndex==22?downSrc:downSrc1"
+                             :style="arrowDown" @click="ArraySortByObj2(infos1.data,'no2',22)"></td>
+                      <td width="100">&nbsp;CO
+                        <img :src="isSortUp&&acIndex==23?upSrc:upSrc1"
+                             :style="arrowUp" @click="ArraySortByObj1(infos1.data,'co',23)">
+                        <img :src="isSortDown&&acIndex==23?downSrc:downSrc1"
+                             :style="arrowDown" @click="ArraySortByObj2(infos1.data,'co',23)"></td>
+                      <td width="100">&nbsp;O<span style="font-size: 10px">3</span>
+                        <img :src="isSortUp&&acIndex==24?upSrc:upSrc1"
+                             :style="arrowUp" @click="ArraySortByObj1(infos1.data,'o3',24)">
+                        <img :src="isSortDown&&acIndex==24?downSrc:downSrc1"
+                             :style="arrowDown" @click="ArraySortByObj2(infos1.data,'o3',24)"></td>
+                      </td>
                     </tr>
-
-                    <tr v-if="code == '1' || code == '2'"  v-for="gexian in infos1">
-                        <td width="100">&nbsp;{{gexian.sortId}}</td>
-                        <td width="100">&nbsp;{{gexian.area_name}}</td>
-                        <td width="100">&nbsp;{{gexian.composite_index}}</td>
-                        <td width="100">&nbsp;{{gexian.pm25}}</td>
-                        <td width="100">&nbsp;{{gexian.pm10}}</td>
-                        <td width="100">&nbsp;{{gexian.so2}}</td>
-                        <td width="100">&nbsp;{{gexian.no2}}</td>
-                        <td width="100">&nbsp;{{gexian.co}}</td>
-                        <td width="100">&nbsp;{{gexian.o3}}</td>
+                  </thead>
+                 <tbody style="height: 350px;">
+                 <!--关心城市，排名在前高亮 -->
+                 <tr   v-for="gexian in topcities1" :style="gaoliang">
+                   <!--v-if="code == '1' || code == '2'"-->
+                   <td width="100">&nbsp;{{gexian.sortId||'-' }}</td>
+                   <td width="100">&nbsp;{{gexian.city_name||gexian.area_name||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.composite_index||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.pm25||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.pm10||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.so2||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.no2||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.co||'-'}}</td>
+                   <td width="100">&nbsp;{{gexian.o3||'-'}}</td>
+                 </tr>
+                 <!--不是关系城市-->
+                    <tr   v-for="gexian in infos1.data" >
+                      <!--v-if="code == '1' || code == '2'"-->
+                        <td width="100">&nbsp;{{gexian.sortId||'-' }}</td>
+                        <td width="100">&nbsp;{{gexian.city_name||gexian.area_name||'-'}}</td>
+                        <td width="100">&nbsp;{{gexian.composite_index||'-'}}</td>
+                        <td width="100">&nbsp;{{gexian.pm25||'-'}}</td>
+                        <td width="100">&nbsp;{{gexian.pm10||'-'}}</td>
+                        <td width="100">&nbsp;{{gexian.so2||'-'}}</td>
+                        <td width="100">&nbsp;{{gexian.no2||'-'}}</td>
+                        <td width="100">&nbsp;{{gexian.co||'-'}}</td>
+                        <td width="100">&nbsp;{{gexian.o3||'-'}}</td>
                     </tr>
-                    <tr v-if="code == '3'"  v-for="gexian in infos1">
-                        <td width="100">&nbsp;{{gexian.sortId}}</td>
-                        <td width="100">&nbsp;{{gexian.city_name}}</td>
-                        <td width="100">&nbsp;{{gexian.composite_index}}</td>
-                        <td width="100">&nbsp;{{gexian.pm25}}</td>
-                        <td width="100">&nbsp;{{gexian.pm10}}</td>
-                        <td width="100">&nbsp;{{gexian.so2}}</td>
-                        <td width="100">&nbsp;{{gexian.no2}}</td>
-                        <td width="100">&nbsp;{{gexian.co}}</td>
-                        <td width="100">&nbsp;{{gexian.o3}}</td>
-                    </tr>
+                 </tbody>
                 </table>
             </div>
         </div>
@@ -221,173 +586,333 @@
     <!--右侧内容-->
     <div style="width: 47%;float: right;margin-right: 20px">
         <div style="height: 590px;">
-            <div style="width: 100%;height: 48px;border-bottom: 1px solid #aaa">
+            <div style="width: 100%;height: 48px;border-bottom: 1px solid #aaa;position: relative;">
                 <div style="float: left">
-                    <span style="font-size: 30px;color: #f5f5f5">{{infosmsg2}}</span>
+                    <span style="font-size: 30px;color: #f5f5f5" v-html="infosmsg2"></span>
                 </div>
-                <div style="float: right;padding-top: 15px;margin-right: 30px">
-                    <img src="img/heart.png" title="设置关心城市" style="cursor: pointer">
-                    <img src="img/placementUp.png" style="padding-left: 22px;cursor: pointer" title="置顶" @click="upCity()">
+                <div style="float: right;padding-top: 5px;margin-right: 30px;">
+                    <img src="img/heart.png" title="设置关心城市" style="cursor: pointer"  @click="showCareCity2(infos2,infosmsg2)">
+                    <img src="img/placementUp.png" style="padding-left: 22px;cursor: pointer" title="将此表格置顶" @click="info2exchangeToTop(infos2,infosmsg2)">
                 </div>
+              <div style="width:180px;height:3px;background: #aaa;position: absolute;left:0;bottom:0"></div>
             </div>
             <div style="width: 100%;height: 40px;" class="clickBag">
-                <span style="display:inline-block;width: 76px;height: 40px;background: #556886;color: #f5f5f5;font-size: 20px;margin-top: 10px;text-align: center;line-height: 40px;margin-left: 24px;border-radius: 8px;cursor: pointer">年</span>
-                <span style="display:inline-block;width: 76px;height: 40px;background: #556886;color: #f5f5f5;font-size: 20px;margin-top: 10px;text-align: center;line-height: 40px;margin-left: 8px;border-radius: 8px;cursor: pointer">月</span>
-                <span style="display:inline-block;width: 98px;height: 40px;background: #556886;color: #f5f5f5;font-size: 20px;margin-top: 10px;text-align: center;line-height: 40px;margin-left: 8px;border-radius: 8px;cursor: pointer">任意时间</span>
-                <span style="display:inline-block;width: 98px;height: 40px;background: #556886;color: #f5f5f5;font-size: 20px;margin-top: 10px;text-align: center;line-height: 40px;margin-left: 8px;border-radius: 8px;cursor: pointer">三年平均</span>
+                <span style="opacity:.8;display:inline-block;width: 96px;height: 40px;background: #556886;color: #f5f5f5;font-size: 20px;margin-top: 10px;text-align: center;line-height: 40px;margin-left: 5px;border-radius: 5px;cursor: pointer">年</span>
+                <span style="opacity:.8;display:inline-block;width: 96px;height: 40px;background: #556886;color: #f5f5f5;font-size: 20px;margin-top: 10px;text-align: center;line-height: 40px;margin-left: 8px;border-radius: 5px;cursor: pointer">月</span>
+                <span style="opacity:.8;display:inline-block;width: 98px;height: 40px;background: #556886;color: #f5f5f5;font-size: 20px;margin-top: 10px;text-align: center;line-height: 40px;margin-left: 8px;border-radius: 5px;cursor: pointer">日</span>
+              <span  @click=""  style="opacity:.8;display:inline-block;width: 200px;height: 40px;background: #556886;color: #f5f5f5;font-size: 20px;margin-top: 10px;text-align: center;line-height: 40px;margin-left: 8px;border-radius: 5px;cursor: pointer">
+                <input type="text" id="test6" placeholder="任意时间">
+              </span>
             </div>
-
-
-            <div class="main-left" style="height: 467px;overflow-y:scroll;margin-top: 16px;width: 97%;">
-                <table style="font-size: 18px;color: #54a7d8">
-                    <tr v-if="code1 == '2' || code1 == '3'">
+            <div class="main-left" style="height: 450px;width: 97%;margin-top:20px">
+                <table v-if="infos2.type==0" style="font-size: 18px;color: #54a7d8;">
+                <thead>
+                <tr >
+                  <!--v-if="code == '1'"-->
+                  <td width="100">&nbsp;排序</td>
+                  <td  width="100">&nbsp;城市</td>
+                   <td  width="100" >浓度
+                    <img :src="isSortUp&&acIndex==25?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos2.data,'pm25',25)">
+                    <img :src="isSortDown&&acIndex==25?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos2.data,'pm25',25)">
+                  </td>
+                  <td  width="100" >变化率<img :src="isSortUp&&acIndex==26?upSrc:upSrc1"
+                                            :style="arrowUp" @click="ArraySortByObj1(infos2.data,'rate_of_change',26)">
+                    <img :src="isSortDown&&acIndex==26?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos2.data,'rate_of_change',26)"></td>
+                  <td  width="100">&nbsp;目标</td>
+                  <td  width="100">完成率
+                    <img :src="isSortUp&&acIndex==27?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos2.data,'completion',27)">
+                    <img :src="isSortDown&&acIndex==27?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos2.data,'completion',27)">
+                  </td>
+                  <td  width="100" >控制值
+                    <img :src="isSortUp&&acIndex==28?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos2.data,'control_val',28)">
+                    <img :src="isSortDown&&acIndex==28?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos2.data,'control_val',28)">
+                  </td>
+                  <td  width="100" >三年平均
+                    <img :src="isSortUp&&acIndex==29?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos2.data,'three_year_avange',29)">
+                    <img :src="isSortDown&&acIndex==29?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos2.data,'three_year_avange',29)">
+                  </td>
+                  <td  width="100">难度评估
+                    <img :src="isSortUp&&acIndex==30?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos2.data,'difficulty_assessment',30)">
+                    <img :src="isSortDown&&acIndex==30?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos2.data,'difficulty_assessment',30)">
+                  </td>
+                </tr>
+                </thead>
+                <tbody style="height: 440px">
+                <tr  v-for="info in topcities2" :style="gaoliang">
+                  <!--v-if="code == '1'"-->
+                  <td width="100">&nbsp;{{info.sortId||'-'}}</td>
+                  <td width="100">&nbsp;{{info.city_name||'-'}}</td>
+                  <td width="100">&nbsp;{{info.pm25||'-'}}</td>
+                  <td width="100">&nbsp;{{info.rate_of_change||'-'}}<img :src="info.rate_of_change.indexOf('-')>-1?'./img/up.png':'img/down.png'" style="display: inline-block;height: 18px"></td>
+                  <td width="100;text-align: center">&nbsp;{{info.pm25_target||'-'}}</td>
+                  <td width="100" :title="'完成率'+info.completion">&nbsp;{{info.completion||'-'}}</td>
+                  <td width="100">&nbsp;{{info.control_val||'-'}}</td>
+                  <td width="100">&nbsp;{{info.three_year_avange||'-'}}</td>
+                  <td width="100">&nbsp;<!--<img src="hh.png" style="display: inline-block;height: 18px">-->{{info.difficulty_assessment}}</td>
+                </tr>
+                <tr  v-for="info in infos2.data" >
+                  <!--v-if="code == '1'"-->
+                  <td width="100">&nbsp;{{info.sortId||'-'}}</td>
+                  <td width="100">&nbsp;{{info.city_name||'-'}}</td>
+                  <td width="100">&nbsp;{{info.pm25||'-'}}</td>
+                  <td width="100">&nbsp;{{info.rate_of_change||'-'}}<img :src="info.rate_of_change.indexOf('-')>-1?'./img/up.png':'img/down.png'" style="display: inline-block;height: 18px"></td>
+                  <td width="100;text-align: center">&nbsp;{{info.pm25_target||'-'}}</td>
+                  <td width="100" :title="'完成率'+info.completion">&nbsp;{{info.completion||'-'}}</td>
+                  <td width="100">&nbsp;{{info.control_val||'-'}}</td>
+                  <td width="100">&nbsp;{{info.three_year_avange||'-'}}</td>
+                  <td width="100">&nbsp;<!--<img src="hh.png" style="display: inline-block;height: 18px">-->{{info.difficulty_assessment}}</td>
+                </tr>
+                </tbody>
+              </table>
+                <table v-else style="font-size: 18px;color: #54a7d8;">
+                  <thead>
+                    <tr >
                         <td width="100">&nbsp;排序</td>
                         <td width="100">&nbsp;城市</td>
-                        <td width="100">&nbsp;综合指数</td>
-                        <td width="100">&nbsp;PM<span style="font-size: 10px">2.5</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;PM<span style="font-size: 10px">10</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;SO<span style="font-size: 10px">2</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;NO<span style="font-size: 10px">2</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;CO<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;O<span style="font-size: 10px">3</span><img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                        <td width="100">综合指数
+                          <img :src="isSortUp&&acIndex==52?upSrc:upSrc1"
+                               :style="arrowUp" @click="ArraySortByObj1(infos2.data,'composite_index',52)"/>
+                          <img :src="isSortDown&&acIndex==52?downSrc:downSrc1"
+                               :style="arrowDown" @click="ArraySortByObj2(infos2.data,'composite_index',52)"/>
+                        </td>
+                        <td width="100" >&nbsp;PM<span style="font-size: 10px">2.5</span>
+                        <img :src="isSortUp&&acIndex==31?upSrc:upSrc1"
+                             :style="arrowUp" @click="ArraySortByObj1(infos2.data,'pm25',31)">
+                        <img :src="isSortDown&&acIndex==31?downSrc:downSrc1"
+                             :style="arrowDown" @click="ArraySortByObj2(infos2.data,'pm25',31)">
+                      </td>
+                      <td width="100">&nbsp;PM<span style="font-size: 10px">10</span>
+                        <img :src="isSortUp&&acIndex==32?upSrc:upSrc1"
+                             :style="arrowUp" @click="ArraySortByObj1(infos2.data,'pm10',32)">
+                        <img :src="isSortDown&&acIndex==32?downSrc:downSrc1"
+                             :style="arrowDown" @click="ArraySortByObj2(infos2.data,'pm10',32)">
+                      </td>
+                      <td width="100">&nbsp;SO<span style="font-size: 10px">2</span>
+                        <img :src="isSortUp&&acIndex==33?upSrc:upSrc1"
+                             :style="arrowUp" @click="ArraySortByObj1(infos2.data,'so2',33)">
+                        <img :src="isSortDown&&acIndex==33?downSrc:downSrc1"
+                             :style="arrowDown" @click="ArraySortByObj2(infos2.data,'so2',33)"></td>
+                      <td width="100">&nbsp;NO<span style="font-size: 10px">2</span>
+                        <img :src="isSortUp&&acIndex==34?upSrc:upSrc1"
+                             :style="arrowUp" @click="ArraySortByObj1(infos2.data,'no2',34)">
+                        <img :src="isSortDown&&acIndex==34?downSrc:downSrc1"
+                             :style="arrowDown" @click="ArraySortByObj2(infos2.data,'no2',34)"></td>
+                      <td width="100">&nbsp;CO
+                        <img :src="isSortUp&&acIndex==35?upSrc:upSrc1"
+                             :style="arrowUp" @click="ArraySortByObj1(infos2.data,'co',35)">
+                        <img :src="isSortDown&&acIndex==35?downSrc:downSrc1"
+                             :style="arrowDown" @click="ArraySortByObj2(infos2.data,'co',35)"></td>
+                      <td width="100">&nbsp;O<span style="font-size: 10px">3</span>
+                        <img :src="isSortUp&&acIndex==36?upSrc:upSrc1"
+                             :style="arrowUp" @click="ArraySortByObj1(infos2.data,'o3',36)">
+                        <img :src="isSortDown&&acIndex==36?downSrc:downSrc1"
+                             :style="arrowDown" @click="ArraySortByObj2(infos2.data,'o3',36)"></td>
+                      </td>
                     </tr>
-                    <tr v-if="code1 == '1'">
-                        <td width="100">&nbsp;排序</td>
-                        <td width="100">&nbsp;城市</td>
-                        <td width="100" >浓度<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">变化率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;目标</td>
-                        <td width="100">完成率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">控制值<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">三年平均<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">难度评估<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
+                  </thead>
+                  <tbody style="height: 440px">
+                  <tr  v-for="chengshi in topcities2" :style="gaoliang">
+                    <!--v-if="code1 == '2' || code1 == '3'"-->
+                    <td width="100">&nbsp;{{chengshi.sortId||'-'}}</td>
+                    <td width="100">&nbsp;{{chengshi.city_name||chengshi.area_name||'-'}}</td>
+                    <td width="100">&nbsp;{{chengshi.composite_index||'-'}}</td>
+                    <td width="100">&nbsp;{{chengshi.pm25||'-'}}</td>
+                    <td width="100">&nbsp;{{chengshi.pm10||'-'}}</td>
+                    <td width="100">&nbsp;{{chengshi.so2||'-'}}</td>
+                    <td width="100">&nbsp;{{chengshi.no2||'-'}}</td>
+                    <td width="100">&nbsp;{{chengshi.co||'-'}}</td>
+                    <td width="100">&nbsp;{{chengshi.o3||'-'}}</td>
+                  </tr>
+                    <tr  v-for="chengshi in infos2.data">
+                      <!--v-if="code1 == '2' || code1 == '3'"-->
+                        <td width="100">&nbsp;{{chengshi.sortId||'-'}}</td>
+                        <td width="100">&nbsp;{{chengshi.city_name||chengshi.area_name||'-'}}</td>
+                        <td width="100">&nbsp;{{chengshi.composite_index||'-'}}</td>
+                        <td width="100">&nbsp;{{chengshi.pm25||'-'}}</td>
+                        <td width="100">&nbsp;{{chengshi.pm10||'-'}}</td>
+                        <td width="100">&nbsp;{{chengshi.so2||'-'}}</td>
+                        <td width="100">&nbsp;{{chengshi.no2||'-'}}</td>
+                        <td width="100">&nbsp;{{chengshi.co||'-'}}</td>
+                        <td width="100">&nbsp;{{chengshi.o3||'-'}}</td>
                     </tr>
-                    <tr  v-if="code1 == '1'" v-for="info in infos2">
-                        <td width="100">&nbsp;{{info.sortId}}</td>
-                        <td width="100">&nbsp;{{info.simple_city_name}}</td>
-                        <td width="100">&nbsp;{{info.pm25}}</td>
-                        <td width="100">&nbsp;{{info.rateOfChange}}<!--<img src="up.png" style="display: inline-block;height: 18px">--></td>
-                        <td width="100">&nbsp;{{info.Pm25Target}}</td>
-                        <td width="100"title="完成率100%">&nbsp;{{infos.completion}}</td>
-                        <td width="100">&nbsp;{{info.controlVal}}</td>
-                        <td width="100">&nbsp;{{info.threeYearAvange}}</td>
-                        <td width="100">&nbsp;<!--<img src="hh.png" style="display: inline-block;height: 18px">-->{{info.difficultyAssesment}}</td>
-                    </tr>
-                    <tr v-if="code1 == '2' || code1 == '3'" v-for="chengshi in infos2">
-                        <td width="100">&nbsp;{{chengshi.sortId}}</td>
-                        <td width="100">&nbsp;{{chengshi.city_name}}</td>
-                        <td width="100">&nbsp;{{chengshi.composite_index}}</td>
-                        <td width="100">&nbsp;{{chengshi.pm25}}</td>
-                        <td width="100">&nbsp;{{chengshi.pm10}}</td>
-                        <td width="100">&nbsp;{{chengshi.so2}}</td>
-                        <td width="100">&nbsp;{{chengshi.no2}}</td>
-                        <td width="100">&nbsp;{{chengshi.co}}</td>
-                        <td width="100">&nbsp;{{chengshi.o3}}</td>
-                    </tr>
+                  </tbody>
                 </table>
             </div>
         </div>
 
         <div style="height: 200px;">
-            <div style="width: 100%;height: 48px;border-bottom: 1px solid #aaa">
+            <div style="width: 100%;height: 48px;border-bottom: 1px solid #aaa;position: relative">
                 <div style="float: left">
-                    <span style="font-size: 30px;color: #f5f5f5">秋冬季PM<span style="font-size: 12px">2.5</span>变化率：16.8% <img src="img/bigdown.png" style="display: inline-block;height: 26px"></span>
+                    <span style="font-size: 30px;color: #f5f5f5" v-html="infosmsg3"><img src="img/bigdown.png" style="display: inline-block;height: 26px;"></span>
                 </div>
-                <div style="float: right;padding-top: 15px;margin-right: 30px">
-                    <img src="img/heart.png" title="设置关心城市" style="cursor: pointer">
-                    <img src="img/placementUp.png" style="padding-left: 22px;cursor: pointer" title="置顶">
+                <div style="float: right;padding-top: 5px;margin-right: 30px">
+                    <img src="img/heart.png" title="设置关心城市" style="cursor: pointer"  @click="showCareCity3(infos3,infosmsg3)">
+                    <img src="img/placementUp.png" style="padding-left: 22px;cursor: pointer" title="将此表格置顶" @click="info3exchangeToTop(infos3,infosmsg3)">
                 </div>
+              <div style="width:180px;height:4px;background: #aaa;position: absolute;left:0;bottom:0"></div>
             </div>
 
-            <div class="main-left" style="height: 200px;overflow-y:scroll;margin-top: 16px;width: 97%;">
-                <table style="font-size: 18px;color: #54a7d8">
-                    <tr>
-                        <td width="100">&nbsp;排序</td>
-                        <td width="100">&nbsp;城市</td>
-                        <td width="100">&nbsp;浓度</td>
-                        <td width="100">&nbsp;变化率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;目标<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;完成率<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;控制值<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                        <td width="100">&nbsp;三年平均<img src="img/sort.png" style="display: inline-block;height: 14px"></td>
-                    </tr>
-                    <tr>
-                        <td width="100">&nbsp;&nbsp;114</td>
-                        <td width="100">&nbsp;&nbsp;石家庄</td>
-                        <td width="100">&nbsp;&nbsp;34</td>
-                        <td width="100">&nbsp;16.5%<img src="img/up.png" style="display: inline-block;height: 18px"></td>
-                        <td width="100">&nbsp;&nbsp;68</td>
-                        <td width="100" title="完成率100%">&nbsp;100%</td>
-                        <td width="100">&nbsp;&nbsp;17</td>
-                        <td width="100">&nbsp;&nbsp;90</td>
-                    </tr>
-                    <tr>
-                        <td width="100">&nbsp;&nbsp;1</td>
-                        <td width="100">&nbsp;&nbsp;泸州</td>
-                        <td width="100">&nbsp;&nbsp;24</td>
-                        <td width="100">&nbsp;16.5%<img src="img/up.png" style="display: inline-block;height: 18px"></td>
-                        <td width="100">&nbsp;&nbsp;48</td>
-                        <td width="100" title="完成率100%">&nbsp;100%</td>
-                        <td width="100">&nbsp;&nbsp;27</td>
-                        <td width="100">&nbsp;&nbsp;90</td>
-                    </tr>
-                    <tr>
-                        <td width="100">&nbsp;&nbsp;3</td>
-                        <td width="100">&nbsp;&nbsp;北京</td>
-                        <td width="100">&nbsp;&nbsp;34</td>
-                        <td width="100">&nbsp;16.5%<img src="img/down.png" style="display: inline-block;height: 18px"></td>
-                        <td width="100">&nbsp;&nbsp;68</td>
-                        <td width="100" title="完成率100%">&nbsp;100%</td>
-                        <td width="100">&nbsp;&nbsp;17</td>
-                        <td width="100">&nbsp;&nbsp;90</td>
-                    </tr>
-                    <tr>
-                        <td width="100">&nbsp;&nbsp;4</td>
-                        <td width="100">&nbsp;&nbsp;自贡</td>
-                        <td width="100">&nbsp;&nbsp;37</td>
-                        <td width="100">&nbsp;16.5%<img src="img/down.png" style="display: inline-block;height: 18px"></td>
-                        <td width="100">&nbsp;&nbsp;65</td>
-                        <td width="100" title="完成率100%">&nbsp;100%</td>
-                        <td width="100">&nbsp;&nbsp;14</td>
-                        <td width="100">&nbsp;&nbsp;90</td>
-                    </tr>
-                    <tr>
-                        <td width="100">&nbsp;&nbsp;5</td>
-                        <td width="100">&nbsp;&nbsp;福州</td>
-                        <td width="100">&nbsp;&nbsp;34</td>
-                        <td width="100">&nbsp;13.5%<img src="img/up.png" style="display: inline-block;height: 18px"></td>
-                        <td width="100">&nbsp;&nbsp;68</td>
-                        <td width="100" title="完成率100%">&nbsp;100%</td>
-                        <td width="100">&nbsp;&nbsp;17</td>
-                        <td width="100">&nbsp;&nbsp;90</td>
-                    </tr>
-                    <tr>
-                        <td width="100">&nbsp;&nbsp;4</td>
-                        <td width="100">&nbsp;&nbsp;自贡</td>
-                        <td width="100">&nbsp;&nbsp;37</td>
-                        <td width="100">&nbsp;15.5%<img src="img/up.png" style="display: inline-block;height: 18px"></td>
-                        <td width="100">&nbsp;&nbsp;65</td>
-                        <td width="100">&nbsp;&nbsp;14</td>
-                        <td width="100" title="完成率100%">&nbsp;100%</td>
-                        <td width="100">&nbsp;&nbsp;90</td>
-                    </tr>
-                    <tr>
-                        <td width="100">&nbsp;&nbsp;5</td>
-                        <td width="100">&nbsp;&nbsp;福州</td>
-                        <td width="100">&nbsp;&nbsp;34</td>
-                        <td width="100">&nbsp;14.5%<img src="img/down.png" style="display: inline-block;height: 18px"></td>
-                        <td width="100">&nbsp;&nbsp;68</td>
-                        <td width="100" title="完成率100%">&nbsp;100%</td>
-                        <td width="100">&nbsp;&nbsp;17</td>
-                        <td width="100">&nbsp;&nbsp;90</td>
-                    </tr>
-                </table>
+            <div class="main-left" style="height: 200px;margin-top: 16px;width: 97%">
+              <table v-if="infos3.type==0" style="font-size: 18px;color: #54a7d8;">
+                <thead>
+                <tr >
+                  <!--v-if="code == '1'"-->
+                  <td width="100">&nbsp;排序</td>
+                  <td  width="100">&nbsp;城市</td>
+                  <td  width="100" >浓度
+                    <img :src="isSortUp&&acIndex==37?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos3.data,'pm25',37)">
+                    <img :src="isSortDown&&acIndex==37?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos3.data,'pm25',37)">
+                  </td>
+                  <td  width="100" >变化率<img :src="isSortUp&&acIndex==38?upSrc:upSrc1"
+                                            :style="arrowUp" @click="ArraySortByObj1(infos3.data,'rate_of_change',38)">
+                    <img :src="isSortDown&&acIndex==38?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos3.data,'rate_of_change',38)"></td>
+                  <td  width="100">&nbsp;目标</td>
+                  <td  width="100">完成率
+                    <img :src="isSortUp&&acIndex==39?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos3.data,'completion',39)">
+                    <img :src="isSortDown&&acIndex==39?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos3.data,'completion',39)">
+                  </td>
+                  <td  width="100" >控制值
+                    <img :src="isSortUp&&acIndex==40?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos3.data,'control_val',40)">
+                    <img :src="isSortDown&&acIndex==40?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos3.data,'control_val',40)">
+                  </td>
+                  <td  width="100" >三年平均
+                    <img :src="isSortUp&&acIndex==41?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos3.data,'three_year_avange',41)">
+                    <img :src="isSortDown&&acIndex==41?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos3.data,'three_year_avange',41)">
+                  </td>
+                  <td  width="100">难度评估
+                    <img :src="isSortUp&&acIndex==42?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos3.data,'difficulty_assessment',42)">
+                    <img :src="isSortDown&&acIndex==42?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos3.data,'difficulty_assessment',42)">
+                  </td>
+                </tr>
+                </thead>
+                <tbody style="height: 190px">
+                <tr  v-for="info in topcities3" :style="gaoliang">
+                  <!--v-if="code == '1'"-->
+                  <td width="100">&nbsp;{{info.sortId||'-'}}</td>
+                  <td width="100">&nbsp;{{info.city_name||'-'}}</td>
+                  <td width="100">&nbsp;{{info.pm25||'-'}}</td>
+                  <td width="100">&nbsp;{{info.rate_of_change||'-'}}<img :src="info.rate_of_change.indexOf('-')>-1?'./img/up.png':'img/down.png'" style="display: inline-block;height: 18px"></td>
+                  <td width="100;text-align: center">&nbsp;{{info.pm25_target||'-'}}</td>
+                  <td width="100" :title="'完成率'+info.completion">&nbsp;{{info.completion||'-'}}</td>
+                  <td width="100">&nbsp;{{info.control_val||'-'}}</td>
+                  <td width="100">&nbsp;{{info.three_year_avange||'-'}}</td>
+                  <td width="100">&nbsp;<!--<img src="hh.png" style="display: inline-block;height: 18px">-->{{info.difficulty_assessment||'-'}}</td>
+                </tr>
+                <tr  v-for="info in infos3.data" >
+                  <!--v-if="code == '1'"-->
+                  <td width="100">&nbsp;{{info.sortId||'-'}}</td>
+                  <td width="100">&nbsp;{{info.city_name||'-'}}</td>
+                  <td width="100">&nbsp;{{info.pm25||'-'}}</td>
+                  <td width="100">&nbsp;{{info.rate_of_change||'-'}}<img :src="info.rate_of_change.indexOf('-')>-1?'./img/up.png':'img/down.png'" style="display: inline-block;height: 18px"></td>
+                  <td width="100;text-align: center">&nbsp;{{info.pm25_target||'-'}}</td>
+                  <td width="100" :title="'完成率'+info.completion">&nbsp;{{info.completion||'-'}}</td>
+                  <td width="100">&nbsp;{{info.control_val||'-'}}</td>
+                  <td width="100">&nbsp;{{info.three_year_avange||'-'}}</td>
+                  <td width="100">&nbsp;<!--<img src="hh.png" style="display: inline-block;height: 18px">-->{{info.difficulty_assessment||'-'}}</td>
+                </tr>
+                </tbody>
+              </table>
+              <table v-else style="font-size: 18px;color: #54a7d8;">
+                <thead>
+                <tr >
+                  <td width="100">&nbsp;排序</td>
+                  <td width="100">&nbsp;城市</td>
+                  <td width="100">综合指数
+                    <img :src="isSortUp&&acIndex==53?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos3.data,'composite_index',53)">
+                    <img :src="isSortDown&&acIndex==53?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos3.data,'composite_index',53)">
+                  </td>
+                  <td width="100" >&nbsp;PM<span style="font-size: 10px">2.5</span>
+                    <img :src="isSortUp&&acIndex==43?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos3.data,'pm25',43)">
+                    <img :src="isSortDown&&acIndex==43?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos3.data,'pm25',43)">
+                  </td>
+                  <td width="100">&nbsp;PM<span style="font-size: 10px">10</span>
+                    <img :src="isSortUp&&acIndex==44?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos3.data,'pm10',44)">
+                    <img :src="isSortDown&&acIndex==44?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos3.data,'pm10',44)">
+                  </td>
+                  <td width="100">&nbsp;SO<span style="font-size: 10px">2</span>
+                    <img :src="isSortUp&&acIndex==45?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos3.data,'so2',45)">
+                    <img :src="isSortDown&&acIndex==45?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos3.data,'so2',45)"></td>
+                  <td width="100">&nbsp;NO<span style="font-size: 10px">2</span>
+                    <img :src="isSortUp&&acIndex==46?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos3.data,'no2',46)">
+                    <img :src="isSortDown&&acIndex==46?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos3.data,'no2',46)"></td>
+                  <td width="100">&nbsp;CO
+                    <img :src="isSortUp&&acIndex==47?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos3.data,'co',47)">
+                    <img :src="isSortDown&&acIndex==47?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos3.data,'co',47)"></td>
+                  <td width="100">&nbsp;O<span style="font-size: 10px">3</span>
+                    <img :src="isSortUp&&acIndex==48?upSrc:upSrc1"
+                         :style="arrowUp" @click="ArraySortByObj1(infos3.data,'o3',48)">
+                    <img :src="isSortDown&&acIndex==48?downSrc:downSrc1"
+                         :style="arrowDown" @click="ArraySortByObj2(infos3.data,'o3',48)"></td>
+                  </td>
+                </tr>
+                </thead>
+                <tbody style="height: 190px">
+                <tr  v-for="chengshi in topcities3" :style="gaoliang">
+                  <!--v-if="code1 == '2' || code1 == '3'"-->
+                  <td width="100">&nbsp;{{chengshi.sortId||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.city_name||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.composite_index||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.pm25||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.pm10||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.so2||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.no2||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.co||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.o3||'-'}}</td>
+                </tr>
+                <tr  v-for="chengshi in infos3.data">
+                  <!--v-if="code1 == '2' || code1 == '3'"-->
+                  <td width="100">&nbsp;{{chengshi.sortId||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.city_name||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.composite_index||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.pm25||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.pm10||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.so2||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.no2||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.co||'-'}}</td>
+                  <td width="100">&nbsp;{{chengshi.o3||'-'}}</td>
+                </tr>
+                </tbody>
+              </table>
             </div>
         </div>
     </div>
 </div>
 <!--主体end-->
-
+</div>
 </body>
 
 </html>
@@ -396,26 +921,508 @@
 
 <script src="js/vue.min.js"></script>
 
-<script src="js/jquery-1.8.3.min.js"></script>
-
+<!--<script src="js/jquery-1.8.3.min.js"></script>-->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="js/laydate/laydate.js"></script> <!-- 改成你的路径 -->
 <script>
+    laydate.render({
+      elem: '#test6'
+      ,range: true
+      ,theme: '#003869'
+    });
+
     var dispatch = new Vue({
-        el: '#dispatch',
-        data: {
-            infos:[],
-            infosmsg:'',
-            infos1:[],
-            infosmsg1:'',
-            infos2:[],
-            infosmsg2:'',
-            code:'',
-            code1:'',
-            code2:''
+        el: '#apps',
+        data() {
+           return {
+             desc:false,
+             infos:{type:0,data:[]},
+             gaoliang:{
+               color:'#00193f'
+             },
+             infosmsg:'',
+             careCity1:[],
+             infos1:{type:1,data:[]},
+             infosmsg1:'',
+             infos2:{type:1,data:[]},
+             infosmsg2:'',
+             infos3:{type:0,data:[]},
+             infosmsg3:'',
+             code:'',
+             code1:'',
+             code2:'',
+             timesss:'',
+             cities:[],//市
+             partments:[],//省
+             areas:[],//区
+             addCityStyle:{
+               width: '316px',
+               height: '196px',
+               background: '#033361',
+               border: '1px solid #00c6ff',
+               'z-index': '888',
+               position: 'absolute',
+
+               'border-radius': '6px'
+             },
+             CityPosition:{
+                left:'44%',
+               // 43  80
+                top: '21%',
+               // 30，70，55
+             },
+             CityPosition1:{
+               left:'44%',
+               // 43  80
+               top: '66%',
+               // 30，70，55
+             },
+             CityPosition2:{
+               left:'77%',
+               // 43  80
+               top: '21%',
+               // 30，70，55
+             },
+             CityPosition3:{
+               left:'77%',
+               // 43  80
+               top: '70%',
+               // 30，70，55
+             },
+             hideStlye:{
+               display:'none'
+             },
+             hideStlye1:{
+               display:'none'
+             },hideStlye2:{
+               display:'none'
+             },hideStlye3:{
+               display:'none'
+             },
+             menu: {
+              position: 'absolute',
+              top: '7vh',
+              left: '0',
+              right: '0',
+              margin: 'auto',
+              width: '35%',
+              'background-color': 'rgba(0, 0, 0, .1)',
+              'font-size':'12px',
+               height:0,
+               transition:'height 1s',
+               overflow:'hidden'
+            },
+             menuTransition:{
+
+             },
+             isShow:false,
+             isSortUp:false,
+             isSort:false,
+             isSortDown:false,
+             arrowUp:{
+               position: 'absolute',
+              width: '17px',
+              height: '14px',
+              top: '3px',
+              'margin-left': '2px'
+             },
+             arrowDown:{
+               position: 'absolute',
+               width: '17px',
+               height: '14px',
+               top: '12px',
+               'margin-left': '2px'
+             },
+             upSrc:"img/arrow-up.png",
+             upSrc1:"img/arrow-up1.png",
+             downSrc:"img/arrow-down.png",
+             downSrc1:"img/arrow-down1.png",
+             isActive:{
+
+             },
+             acIndex:0,
+             hideImg:{
+               display:'none'
+             },
+             xianqu:false,
+             caresCities:[],
+             caresCities1:[],
+             topcities1:[],
+             topcities:[],
+             topcities2:[],
+             topcities3:[],
+             caresCities2:[],
+             caresCities3:[],
+
+           }
+
         },
         mounted: function(){
             this.pingjie();
+            this.getData();
+
+        },
+        watch:{
+
         },
         methods: {
+          handleMouseMove(){
+           const that=this
+            that.menuTransition={
+
+              height:'68.9297px'
+            }
+            that.isShow=true
+
+          },
+          handleMouseLeave(){
+            const that=this
+            that.isShow=false
+            that.menuTransition={
+
+              height:'0'
+            }
+          },
+          // change事件
+          cityChange(){
+            const that=this
+            var val= $("#selectionCityNum").val()
+            console.log(val)
+            var text=$("#selectionCityNum option[value="+val+"]").text()
+            that.caresCities.push({id:val,name:text})
+          },
+          cityChange1(){
+            const that=this
+            var val= $("#selectionCityNum1").val()
+            console.log(val)
+            var text=$("#selectionCityNum1 option[value="+val+"]").text()
+            that.caresCities1.push({id:val,name:text})
+          }, cityChange2(){
+            const that=this
+            var val= $("#selectionCityNum2").val()
+            console.log(val)
+            var text=$("#selectionCityNum2 option[value="+val+"]").text()
+            that.caresCities2.push({id:val,name:text})
+          },
+          cityChange3(){
+            const that=this
+            var val= $("#selectionCityNum3").val()
+            var text=$("#selectionCityNum3 option[value="+val+"]").text()
+            that.caresCities3.push({id:val,name:text})
+          },
+
+          // 删除城市
+          deleteCity(id){
+            const that=this
+            console.log(id)
+            that.caresCities.splice(id,1)
+            // $.ajax({
+            //   type: "POST",
+            //   url: 'http://180.76.119.77:9096/api/indexSchduling/delectCreaCity',//服务器
+            //   data:{
+            //     id:id,
+            //   },
+            //   success: function(res){
+            //     if(res.code==200){
+            //       alert('删除成功')
+            //     }
+            //
+            //   }
+            // })
+          },
+          deleteCity1(id){
+            const that=this
+            console.log(id)
+            that.caresCities1.splice(id,1)
+
+          },
+          deleteCity2(id){
+            const that=this
+            console.log(id)
+            that.caresCities2.splice(id,1)
+
+          },
+          deleteCity3(id){
+            const that=this
+            console.log(id)
+            that.caresCities3.splice(id,1)
+
+          },
+          configCity1(){
+            const that=this
+            that.infos1.data.map((item,index)=>{
+
+              that.caresCities1.map((item1)=>{
+                if(item.id==item1.id||item.city_id==item1.id||item.area_id==item1.id){
+                  that.topcities1.push(item)
+                  that.infos1.data.splice(index,1)
+                }
+              })
+
+            })
+            that.hideStlye1={
+              display:'none'
+            }
+          },
+          configCity2(){
+            const that=this
+            that.infos2.data.map((item,index)=>{
+
+              that.caresCities2.map((item1)=>{
+                if(item.id==item1.id||item.city_id==item1.id||item.area_id==item1.id){
+                  that.topcities2.push(item)
+                  that.infos2.data.splice(index,1)
+                }
+              })
+
+            })
+            that.hideStlye2={
+              display:'none'
+            }
+          },
+          configCity3(){
+
+            const that=this
+            that.infos3.data.map((item,index)=>{
+
+              that.caresCities3.map((item1)=>{
+                if(item.id==item1.id||item.city_id==item1.id||item.area_id==item1.id){
+                  that.topcities3.push(item)
+                  that.infos3.data.splice(index,1)
+                }
+              })
+
+            })
+            that.hideStlye3={
+              display:'none'
+            }
+          },
+          configCity(){
+            const that=this
+            that.infos.data.map((item,index)=>{
+
+              that.caresCities.map((item1)=>{
+                if(item.id==item1.id||item.city_id==item1.id||item.area_id==item1.id){
+                  that.topcities.push(item)
+                  that.infos.data.splice(index,1)
+                }
+              })
+
+            })
+            that.hideStlye={
+              display:'none'
+            }
+            console.log($('#selectionCityNum').val())
+            $.ajax({
+              type: "POST",
+              url: 'http://180.76.119.77:9096/api/indexSchduling/CareCity',//服务器
+              data:{
+                id:$('#selectionCityNum').val(),
+
+              },
+              success: function(res){
+                if(res.code==200){
+                  alert('添加成功')
+                }
+
+              }
+            })
+          },
+
+
+          showCareCity(info){
+            console.log(info)
+            const that=this
+
+            that.partments.length=0
+            info.data.map((item)=>{
+              let cityName=item.city_name||item.area_name
+              let cityId=item.area_id || item.id || item.city_id
+
+                that.partments.push({id:cityId,name:cityName})
+
+            })
+            that.hideStlye={}
+            that.hideStlye1={display:'none'}
+            that.hideStlye2={display:'none'}
+            that.hideStlye3={display:'none'}
+          },
+          showCareCity1(info){
+            console.log(info)
+            const that=this
+
+            that.partments.length=0
+            info.data.map((item)=>{
+              let cityName=item.city_name||item.area_name
+              let cityId=item.area_id || item.id || item.city_id
+
+              that.partments.push({id:cityId,name:cityName})
+
+            })
+            that.hideStlye1={}
+            that.hideStlye={display:'none'}
+            that.hideStlye2={display:'none'}
+            that.hideStlye3={display:'none'}
+          },
+          showCareCity2(info){
+            console.log(info)
+            const that=this
+
+            that.partments.length=0
+            info.data.map((item)=>{
+              let cityName=item.city_name||item.area_name
+              let cityId=item.area_id || item.id || item.city_id
+
+              that.partments.push({id:cityId,name:cityName})
+
+            })
+            that.hideStlye2={}
+            that.hideStlye1={display:'none'}
+            that.hideStlye3={display:'none'}
+            that.hideStlye={display:'none'}
+          },
+          showCareCity3(info){
+            console.log(info)
+            const that=this
+
+            that.partments.length=0
+            info.data.map((item)=>{
+              let cityName=item.city_name||item.area_name
+              let cityId=item.area_id || item.id || item.city_id
+
+              that.partments.push({id:cityId,name:cityName})
+
+            })
+            that.hideStlye3={}
+            that.hideStlye={display:'none'}
+            that.hideStlye1={display:'none'}
+            that.hideStlye2={display:'none'}
+          },
+          closeAddCity(){
+            const that=this
+            that.hideStlye={
+              display:'none'
+            }
+          },  closeAddCity1(){
+            const that=this
+            that.hideStlye1={
+              display:'none'
+            }
+          },  closeAddCity2(){
+            const that=this
+            that.hideStlye2={
+              display:'none'
+            }
+          },  closeAddCity3(){
+            const that=this
+            that.hideStlye3={
+              display:'none'
+            }
+          },
+          getData(){
+           const that=this
+            $.ajax({
+              type: "GET",
+              url: 'http://180.76.119.77:9096/api/indexSchduling/getIndexSchdulingAllData.action?aid=130100&pid=130100&modelNum=2&sort=4&sortCounty=7&dateType=2&startDate=2019-02-01&endDate=2019-02-02&sortPm25=1&sortCare=1',//服务器
+              // data:{
+              //   aid:'130100',
+              //   pid:'130100',
+              //   modelNum:2,
+              //   sortCountry:7,
+              //   datatype:1,
+              //   startTime:"2018-12-10%2000:00:00",
+              //   endTime:'2019-01-30%2000:00:00'
+              // },
+              success: function(res){
+                console.log(res)
+                console.log(that)
+                that.infos.data=res.data[1].data
+                that.infosmsg= that.changString(res.data[1].msg)
+                that.infos2.data=res.data[0].data
+                that.infosmsg2= that.changString(res.data[0].msg)
+                that.infosmsg1= that.changString(res.data[2].msg)
+                that.infosmsg3= that.changString(res.data[4].msg)
+                that.infos1.data=res.data[2].data.CityYearAccData
+                that.infos3.data=res.data[4].data
+                that.timesss=res.data[3]
+
+              }
+            })
+
+          },
+          changString(str){
+            if(str.indexOf('2.5')>-1){
+              return str.replace('2.5','<span style="font-size: 12px">2.5</span>')
+            }
+            if(str.indexOf('168城市')>-1){
+              var strs=str.replace('年','').replace('第',":第<span style='color:#01d8d0'>").replace('名',"</span>名")
+
+              return strs
+            }
+            return str;
+          },
+          compare(property,flag){
+          const that=this
+            console.log(flag)
+            return function(a,b){
+              var value1 = a[property].toString();
+              var value2 = b[property].toString();
+              if(value1.indexOf('%')>-1||value2.indexOf('%')>-1){
+                let v1=value1.indexOf('%')
+                let v2=value2.indexOf('%')
+                return flag?value1.substring(0,v1) - value2.substring(0,v2): value2.substring(0,v2)-value1.substring(0,v1);
+              }
+              return flag?value1-value2:value2-value1;
+            }
+       },
+            // 排序
+          ArraySortByObj1(array,property,index){
+            const that=this
+            console.log(index)
+            that.isSortUp=!that.isSortUp
+            that.isSortDown=false
+            that.acIndex=index
+            console.log(array.sort(that.compare(property,true)))
+
+          },
+          ArraySortByObj2(array,property,index){
+            const that=this
+            console.log(index)
+            that.isSortUp=false
+            that.isSortDown=!that.isSortDown
+            that.acIndex=index
+            console.log(array.sort(that.compare(property,false)))
+
+          },
+     // 置顶
+          info1exchangeToTop(info,msg){
+            const that=this
+            let tapinfo=info
+            let tapmsg=msg
+
+            that.infos1=that.infos
+            that.infosmsg1=that.infosmsg
+            that.infos=tapinfo
+            that.infosmsg=tapmsg
+          },
+          info2exchangeToTop(info,msg){
+            const that=this
+            let tapinfo=info
+            let tapmsg=msg
+            that.infos2=that.infos
+            that.infosmsg2=that.infosmsg
+            that.infos=tapinfo
+            that.infosmsg=tapmsg
+          },
+          info3exchangeToTop(info,msg){
+            const that=this
+            let tapinfo=info
+            let tapmsg=msg
+            that.infos3=that.infos
+            that.infosmsg3=that.infosmsg
+            that.infos=tapinfo
+            that.infosmsg=tapmsg
+          },
             /*
             * 累计浓度  1
             * 168   2
@@ -529,12 +1536,29 @@
   $('#return_index').on('click',function () {
     window.location.href= '../index.html'
   })
+  $("#numOne").click(()=>{
+    console.log(this)
+    const that=this
+    console.log(that)
+  })
+  $("#numTwo").click(()=>{
+
+  })
+  $("#numThree").click(()=>{
+
+  })
+  $("#numFor").click(()=>{
+
+  })
+
     $(function () {
         $('.clickBag span:nth-child(1)').addClass('cur').siblings().removeClass('cur')
         $('.clickBag span').click(function () {
             $(this).addClass('cur').siblings().removeClass('cur')
         });
+
     });
+
 </script>
 
 

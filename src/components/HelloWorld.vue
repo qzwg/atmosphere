@@ -19,7 +19,7 @@
       </div>
       <div class="content">
         <div class="col-xs-3 content_left">
-          <span class="h5">更新时间：2019-01-19 18:00</span><br>
+          <span class="h5" v-if="airData.cityHourData">更新时间：<span v-html='updatetime(airData.cityHourData.time)'></span></span><br>
           <p></p>
           <div class="whborder content_left_top ">
             <p class=" whtitle ">实时空气质量指数（AQI）
@@ -28,53 +28,56 @@
                         <i class="fa fa-exchange" id="changeCity" style="transform: rotate(90deg)"></i>
                     </span>
             </p>
-            <div class="air ">
+            <div class="air " v-if="airData.cityHourData">
               <div class="col-xs-6">
-                <div class="circlechart">141</div>
+                <div class="circlechart">{{airData.cityHourData.aqi}}</div>
               </div>
               <div class="col-xs-6 whpadding ">
-                首要污染物：PM2.5<br>
-                污染浓度：196
+                首要污染物：{{airData.cityHourData.mainPoll}}<br>
+                污染浓度：{{airData.cityHourData[airData.cityHourData.mainPoll] || '-'}}
               </div>
             </div>
-            <div class="airdata ">
-              <div class="col-xs-4 "><i class="fa fa-thermometer "></i> 温度11.9℃</div>
-              <div class="col-xs-4 "><i class="fa fa-umbrella"></i> 湿度47.5%</div>
-              <div class="col-xs-4 "><i class="fa fa-send-o"></i> 东北风1级</div>
+            <div class="airdata " v-if="airData.weatherMap">
+              <div class="col-xs-4 "><i class="fa fa-thermometer "></i> 温度{{airData.weatherMap.temp}}℃</div>
+              <div class="col-xs-4 "><i class="fa fa-umbrella"></i> 湿度{{airData.weatherMap.humi}}%</div>
+              <div class="col-xs-4 "><i class="fa fa-send-o"></i> 东北风{{airData.weatherMap.c2_wind_speed}}级</div>
             </div>
             <div class="airsix">
               <div class="airsix_title ">2019年空气质量目标完成</div>
               <div class="airsix_content ">
                 <div class="col-xs-6 ">
                   <div class="airsix_left">
-                    <div class="">
+                    <div class="" v-if="airTarget.cityDayAccData">
                       <span>PM<span class="whsub">2.5</span> 累计</span><br>
-                      <span class="air_quality">63</span>
+                      <span class="air_quality">{{airTarget.cityDayAccData.pm25}}</span>
                     </div>
                     <div class="">
                       <span>目标/完成难度</span><br>
-                      <span class="air_quality">62/10%</span>
+                      <span class="air_quality">{{airTarget.pm25Target}}/{{airTarget.difficultyAssessment}}</span>
                     </div>
                     <div class="">
                       <span>同期变化</span><br>
-                      <span class="air_quality">13.3<i class="fa fa-long-arrow-down"
-                                                       style="color: rgb(133,216,79)"></i></span>
+                      <span class="air_quality">{{airTarget.sameTimeChange}}
+                        <i v-if="sameTimeChange<0" class="fa fa-long-arrow-down" style="color: rgb(133,216,79)"></i>
+                        <i v-if="sameTimeChange>0" class="fa fa-long-arrow-up" style="color: rgb(189,51,51)"></i>
+                      </span>
                     </div>
                   </div>
                 </div>
-                <div class="col-xs-6 ">
+                <div class="col-xs-6 " v-if="airTarget.cityDayAccData">
                   <div class="airsix_right">
                     <div class="">
                       <span>综合指数累计</span><br>
-                      <span class="air_quality">6.45</span>
+                      <span class="air_quality">{{airTarget.cityDayAccData.compositeIndex}}</span>
                     </div>
                     <div class="">
                       <span>排名</span><br>
-                      <span class="air_quality">倒数17</span>
+                      <span class="air_quality">{{airTarget.cityMessage.cityrank}}</span>
                     </div>
                     <div class="">
                       <span>关注指标</span><br>
-                      <span class="air_quality">NO<span class="whsub">2</span>(5)</span>
+                      <span class="air_quality">{{airTarget.cityDayAccData.mainPol?airTarget.cityDayAccData.mainPol:"-"}}
+                        <!-- <span class="whsub">{{airTarget.cityDayAccData[airTarget.cityDayAccData.mainPol+"Level"]}}</span>({{airTarget.cityDayAccData[airTarget.cityDayAccData.mainPol+"Iaqi"]}})--></span>
                     </div>
                   </div>
                 </div>
@@ -91,20 +94,20 @@
               <div class="col-xs-3 whtitle">城市排名</div>
               <div class="col-xs-9 text-right">
                 <ul class="city_sort_change">
-                  <li class="liFocus">168</li>
-                  <li>2+26</li>
-                  <li>省内</li>
-                  <li>县区</li>
+                  <li :class="{liFocus: DD=='168'}" @click="DD = '168'">168</li>
+                  <li :class="{liFocus: DD=='2+26'}" @click="DD = '2+26'">2+26</li>
+                  <li :class="{liFocus: DD=='省内'}" @click="DD = '省内'">省内</li>
+                  <li :class="{liFocus: DD=='县区'}" @click="DD = '县区'">县区</li>
                 </ul>
               </div>
             </div>
             <div class="city_bottom">
               <div class="city_tab">
                 <ul class="city_time_change">
-                  <li class="liFocus">时</li>
-                  <li>日</li>
-                  <li>月</li>
-                  <li>年</li>
+                  <li :class="{liFocus: TIMEDD=='时'}" @click="TIMEDD = '时'">时</li>
+                  <li :class="{liFocus: TIMEDD=='日'}" @click="TIMEDD = '日'">日</li>
+                  <li :class="{liFocus: TIMEDD=='月'}" @click="TIMEDD = '月'">月</li>
+                  <li :class="{liFocus: TIMEDD=='年'}" @click="TIMEDD = '年'">年</li>
                 </ul>
               </div>
               <div id="_city_table_id" class="city_table">
@@ -163,7 +166,7 @@
             </div>
             <div class="left_detail_line"></div>
             <div class="left_detail_content">
-              <table class="table  text-center" border="1px solid #fff">
+              <table class="table  text-center" border="1px solid #fff" v-if="airTargetModal.targetList">
                 <tr>
                   <td colspan="8">省定年度完成计划(1.1-12.26)</td>
                 </tr>
@@ -186,38 +189,38 @@
                 <tr>
                   <td rowspan="4">查看年度目标</td>
                   <td>PM10(μg/㎡)</td>
-                  <td>≤115</td>
-                  <td>≤103</td>
-                  <td>≤395</td>
-                  <td>247</td>
-                  <td>141</td>
-                  <td>可以完成</td>
+                  <td>≤{{airTargetModal.targetList.pm10Target|| '暂无数据'}}</td>
+                  <td>≤{{airTargetModal.finishMap.pm10Finish}}</td>
+                  <td>≤{{airTargetModal.controlValMap.pm10ControlVal}}</td>
+                  <td>{{airTargetModal.beforeLastYearMap ? airTargetModal.beforeLastYearMap.lastYearPm10 : '暂无数据'}}</td>
+                  <td>{{airTargetModal.lastYearMap.lastYearPm10}}</td>
+                  <td>{{airTargetModal.predictMap.pm10Predict}}</td>
                 </tr>
                 <tr>
                   <td>PM2.5(μg/㎡)</td>
-                  <td>≤66</td>
-                  <td>61</td>
-                  <td>≤187</td>
-                  <td>202</td>
-                  <td>96</td>
-                  <td>有风险</td>
+                  <td>≤{{airTargetModal.targetList.pm25Percent|| '暂无数据'}}</td>
+                  <td>≤{{airTargetModal.finishMap.pm25Finish}}</td>
+                  <td>≤{{airTargetModal.controlValMap.pm25ControlVal}}</td>
+                  <td>{{airTargetModal.beforeLastYearMap ? airTargetModal.beforeLastYearMap.lastYearPm25 : '暂无数据'}}</td>
+                  <td>{{airTargetModal.lastYearMap.lastYearPm25}}</td>
+                  <td>{{airTargetModal.predictMap.pm25Predict}}</td>
                 </tr>
                 <tr>
                   <td>优良天(天)</td>
-                  <td>200</td>
-                  <td>160</td>
-                  <td>40</td>
-                  <td>1</td>
-                  <td>8</td>
-                  <td>无法完成</td>
+                  <td>{{airTargetModal.targetList.gooddayTarget}}</td>
+                  <td>{{airTargetModal.finishMap.gooddayFinish}}</td>
+                  <td>{{airTargetModal.controlValMap.gooddayControlVal}}</td>
+                  <td>{{airTargetModal.beforeLastYearMap ? airTargetModal.beforeLastYearMap.beforLastYearGooddayCount : '暂无数据'}}</td>
+                  <td>{{airTargetModal.lastYearMap.lastYearGooddayCount}}</td>
+                  <td>{{airTargetModal.predictMap.gooddayPredict}}</td>
                 </tr>
                 <tr>
                   <td>综合指数排名</td>
                   <td>169城市排名退20</td>
                   <td>倒排17(6.35)</td>
-                  <td>--</td>
-                  <td>--</td>
-                  <td>--</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
                   <td>艰难</td>
                 </tr>
               </table>
@@ -274,7 +277,7 @@
                 <li class="airtype right_ol_liFocus" data-type="aqi">AQI</li>
                 <li class="airtype" data-type="pm25">PM<span class="whsub">2.5</span></li>
                 <li class="airtype" data-type="pm10">PM<span class="whsub">10</span></li>
-                <li class="airtype" data-type="o3">O<span class="whsub">3</span>(8h)</li>
+                <li class="airtype" data-type="o3">O<span class="whsub">3</span></li>
                 <li class="airtype" data-type="co">CO</li>
                 <li class="airtype" data-type="no2">NO<span class="whsub">2</span></li>
                 <li class="airtype" data-type="so2">SO<span class="whsub">2</span></li>
@@ -297,7 +300,7 @@
                 <div class="warning_title">
                   警报
                   <span class="pull-right" style="margin-right: 10px;">
-                              <i class="fa fa-bell-o" style="color: #fff;font-size: 16px"></i> <span style="color: red">争优保良</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                              <i class="fa fa-bell-o" style="color: #fff;font-size: 16px"></i> <span style="color: red">{{warningInfo.msg}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
                     class="warning_info_close">×</span>
                             </span>
                 </div>
@@ -336,7 +339,33 @@
           <div class="line"></div>
           <div class="line_mark">
             <div>
-              <div class="col-xs-1">
+              <div class="col-xs-1" v-for="v in 9" :key="v">
+                <div class="line_mark_i">
+                  <ul>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                  </ul>
+                </div>
+                <div class="line_mark_num">
+                  <div>
+                    <i>03</i>
+                    <i>06</i>
+                    <i>09</i>
+                    <i>12</i>
+                    <i>15</i>
+                    <i>18</i>
+                    <i>21</i>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="col-xs-1">
                 <div class="line_mark_i">
                   <ul>
                     <li></li>
@@ -621,116 +650,102 @@
                     <i>21</i>
                   </div>
                 </div>
-              </div>
-              <div class="col-xs-1">
-                <div class="line_mark_i">
-                  <ul>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                  </ul>
-                </div>
-                <div class="line_mark_num">
-                  <div>
-                    <i>03</i>
-                    <i>06</i>
-                    <i>09</i>
-                    <i>12</i>
-                    <i>15</i>
-                    <i>18</i>
-                    <i>21</i>
-                  </div>
-                </div>
-              </div>
+              </div> -->
             </div>
           </div>
           <div class="mark_point"></div>
           <div class="line_info">
-            <div>12:00</div>
+
+            <div v-if="airData.cityHourData"> <span v-html='updatetime(airData.cityHourData.time).substring(10,16)'></span></div>
             <div></div>
           </div>
         </div>
         <div class="footer_div">
-          <div>
+          <div v-if="playData.history">
             <div class="col-xs-1 ">
               <div class="col-xs-5 footer_date">
-                1-17
+                {{playData.history.data[0].data_real_time.substring(5,10)}}
               </div>
               <div class="col-xs-7">
-                <div class="footer_date1">昨日 <span class="red">320</span></div>
-                <div class="footer_date2">同期 <span class="red">320</span></div>
+                <div class="footer_date1"><div>历史</div> <div class="red">{{playData.history.data[0].aqi}}</div></div>
+                <div class="footer_date2"><div>同期</div> <div class="red">{{playData.history.data[0].tq_aqi}}</div></div>
               </div>
             </div>
             <div class="col-xs-1 ">
               <div class="col-xs-5 footer_date">
-                1-18
+                {{playData.history.data[1].data_real_time.substring(5,10)}}
               </div>
               <div class="col-xs-7">
-                <div class="footer_date1">昨日 <span class="orange">320</span></div>
-                <div class="footer_date2">同期 <span class="red">320</span></div>
+                <div class="footer_date1"><div>历史</div> <div class="orange">{{playData.history.data[1].aqi}}</div></div>
+                <div class="footer_date2"><div>同期</div> <div class="red">{{playData.history.data[1].tq_aqi}}</div></div>
               </div>
             </div>
             <div class="col-xs-1 ">
               <div class="col-xs-5 footer_date">
-                1-19
+                {{playData.history.data[2].data_real_time.substring(5,10)}}
               </div>
               <div class="col-xs-7">
-                <div class="footer_date1">昨日 <span class="red">320</span></div>
-                <div class="footer_date2">同期 <span class="green">320</span></div>
+                <div class="footer_date1"><div>历史</div> <div class="red">{{playData.history.data[2].aqi}}</div></div>
+                <div class="footer_date2"><div>同期</div> <div class="green">{{playData.history.data[2].tq_aqi}}</div></div>
               </div>
             </div>
             <div class="col-xs-1 ">
               <div class="col-xs-5 footer_date">
-                1-20
+                {{playData.history.data[3].data_real_time.substring(5,10)}}
               </div>
               <div class="col-xs-7">
-                <div class="footer_date1">昨日 <span class="orange">320</span></div>
-                <div class="footer_date2">同期 <span class="red">320</span></div>
+                <div class="footer_date1"><div>历史</div> <div class="orange">{{playData.history.data[3].aqi}}</div></div>
+                <div class="footer_date2"><div>同期</div> <div class="red">{{playData.history.data[3].tq_aqi}}</div></div>
+              </div>
+            </div>
+            <div class="col-xs-1 ">
+              <div class="col-xs-5 footer_date">
+                {{playData.now.data.data_real_time.substring(5,10)}}
+              </div>
+              <div class="col-xs-7">
+                <div class="footer_date1"><div>累计</div> <div class="orange">{{playData.now.aqi || '-'}}</div></div>
+                <div class="footer_date2"><div>同期</div> <div class="red">{{playData.now.tq_aqi || '-'}}</div></div>
+
               </div>
             </div>
             <div class="col-xs-1 " style="padding-left: 10px !important;padding-right: 10px !important;">
               <div class="col-xs-5 footer_date">
-                1-21
+                {{playData.history.data[4].data_real_time.substring(5,10)}}
               </div>
               <div class="col-xs-7">
-                <div class="footer_date1">累计 <span class="red">320</span></div>
-                <div class="footer_date2">同期 <span class="green">320</span></div>
+
+                <div class="footer_date1"><div>预测 </div><div class="red" style="padding-left: 5px;">{{playData.history.data[4].aqi || '-'}}</div></div>
+                <div class="footer_date2"><div>同期 </div><div class="green" style="padding-left: 2px;">{{playData.history.data[4].tq_aqi}}</div></div>
               </div>
             </div>
             <div class="col-xs-1 ">
               <div class="col-xs-5 footer_date">
-                1-22
+                {{playData.history.data[5].data_real_time.substring(5,10)}}
               </div>
               <div class="col-xs-7">
-                <div class="footer_date1">预测 <span class="red">320</span></div>
-                <div class="footer_date2">同期 <span class="red">320</span></div>
+                <div class="footer_date1"><div>预测</div> <div class="red">{{playData.history.data[5].aqi || '-'}}</div></div>
+                <div class="footer_date2"><div>同期</div> <div class="red">{{playData.history.data[5].tq_aqi}}</div></div>
               </div>
             </div>
             <div class="col-xs-1 ">
               <div class="col-xs-5 footer_date">
-                1-23
+                {{playData.history.data[6].data_real_time.substring(5,10)}}
               </div>
               <div class="col-xs-7">
-                <div class="footer_date1">预测 <span class="red">320</span></div>
-                <div class="footer_date2">同期 <span class="red">320</span></div>
+                <div class="footer_date1"><div>预测</div> <div class="red">{{playData.history.data[6].aqi || '-'}}</div></div>
+                <div class="footer_date2"><div>同期</div> <div class="red">{{playData.history.data[6].tq_aqi}}</div></div>
               </div>
             </div>
             <div class="col-xs-1 ">
               <div class="col-xs-5 footer_date">
-                1-24
+                {{playData.history.data[7].data_real_time.substring(5,10)}}
               </div>
               <div class="col-xs-7">
-                <div class="footer_date1">预测 <span class="orange">320</span></div>
-                <div class="footer_date2">同期 <span class="red">320</span></div>
+                <div class="footer_date1"><div>预测</div> <div class="orange">{{playData.history.data[7].aqi || '-'}}</div></div>
+                <div class="footer_date2"><div>同期</div> <div class="red">{{playData.history.data[7].tq_aqi}}</div></div>
               </div>
             </div>
-            <div class="col-xs-1 ">
+            <!-- <div class="col-xs-1 ">
               <div class="col-xs-5 footer_date">
                 1-25
               </div>
@@ -738,7 +753,7 @@
                 <div class="footer_date1">预测 <span class="red">320</span></div>
                 <div class="footer_date2">同期 <span class="green">320</span></div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -752,6 +767,15 @@
 <style scoped>
   .header{
     background-image: url("../../static/images/header.png");
+  }
+  .footer_date1 div,.footer_date2 div{
+    display: inline-block;
+    overflow: hidden;
+  }
+  .footer_date1 div:last-child,.footer_date2 div:last-child{
+    width:50%;
+    text-align: left;
+
   }
 
 </style>
@@ -880,64 +904,161 @@
             }
           }
         ],
-        data2: []
+        DD: '168', // 168 ， 2+26
+        TIMEDD: '时', // 时 ，天
+        data2: [],
+        airData: {}, // 实时空气质量指数
+        airTarget: {}, // 空气质量目标完成
+        airTargetModal: {}, // 空气质量目标弹窗数据
+        warningInfo: {}, // 警报信息
+        playData: {} ,// 播放接口的数据
+        sameTimeChange:""
       }
     },
     components: {
       VAirtarget
     },
+    created () {
+      this.getCityHourDataByAreaId()
+      this.getHomePageDayData()
+      this.queryCityAlarm()
+      this.broadcast()
+    },
     mounted (){
       this.eleHeight = $('#_city_table_id').height()+5
       var that = this
-// 左下角城市排名 -- 排名范围切换
-      $(".city_sort_change li").click(function () {
-        $(".city_sort_change li").each(function (item) {
-          if($(this).hasClass('liFocus')) {
-            $(this).removeClass('liFocus')
-          }
-        })
-        $(this).addClass('liFocus')
-        that.getCityRank()
-        let city_sort = $(this).text();
-        console.log("城市排名范围切换：" + city_sort);
-      })
+      // 左下角城市排名 -- 排名范围切换
+      // console.log($(".city_sort_change li"))
+      // $(".city_sort_change li").click(function () {
+      //   $(".city_sort_change li").each(function (item) {
+      //     if($(this).hasClass('liFocus')) {
+      //       $(this).removeClass('liFocus')
+      //     }
+      //   })
+      //   $(this).addClass('liFocus')
+      //   that.getCityRank()
+      //   let city_sort = $(this).text();
+      //   console.log("城市排名范围切换：" + city_sort);
+      // })
 
-// 左下角城市排名 -- 时间类型切换
+      // // 左下角城市排名 -- 时间类型切换
 
-      $(".city_time_change li").click(function () {
-        let city_sort = $(".city_sort_change .liFocus").text();
-        let city_time = $(this).text();
-        $(".city_time_change li").each(function (item) {
-          if($(this).hasClass('liFocus')) {
-            $(this).removeClass('liFocus')
-          }
-        })
-        $(this).addClass('liFocus')
-        that.getCityRank()
-        console.log("=========================")
-        console.log("城市排名范围切换：" + city_sort);
-        console.log("城市排名时间类型切换：" + city_time)
-        console.log("=========================")
-      })
+      // $(".city_time_change li").click(function () {
+      //   let city_sort = $(".city_sort_change .liFocus").text();
+      //   let city_time = $(this).text();
+      //   $(".city_time_change li").each(function (item) {
+      //     if($(this).hasClass('liFocus')) {
+      //       $(this).removeClass('liFocus')
+      //     }
+      //   })
+      //   $(this).addClass('liFocus')
+      //   this.getCityRank()
+      //   console.log("=========================")
+      //   console.log("城市排名范围切换：" + city_sort);
+      //   console.log("城市排名时间类型切换：" + city_time)
+      //   console.log("=========================")
+      // })
       this.getCityRank()
     },
+    watch: {
+      DD () {
+        this.getCityRank()
+      },
+      TIMEDD () {
+        this.getCityRank()
+      }
+    },
     methods:{
+      // 时间格式转换
+     updatetime(time){
+       var dateee = new Date(time).toJSON();
+       var date = new Date(+new Date(dateee)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'')
+      return date.substring(0,date.length-3);
+     },
+      queryCityAlarm () { // 获取警报信息
+        const vm = this
+        $.ajax({
+          // url: 'http://180.76.119.77:9096/api/Alarm?areaId=130100',  原来areaId 改为cityId
+          url: 'http://180.76.119.77:9096/api/Alarm?cityId=130100',
+          success: (res) => {
+            console.log('获取警报信息')
+            vm.warningInfo = res
+          }
+        })
+      },
+      getHomePageDayData () { //  2019年空气质量目标完成
+        const vm = this
+        $.ajax({
+          url: 'http://180.76.119.77:9096/api/homePage/getHomePageDayData.action?areaId=130100',
+          success: (res) => {
+            console.log('2019年空气质量目标完成')
+            if (res.code === 200) {
+              vm.airTarget = res.data[0].data
+              vm.sameTimeChange=parseInt(res.data[0].data.sameTimeChange.substring(0,res.data[0].data.sameTimeChange.length-1))
+              vm.airTargetModal = res.data[1].data
+            } else {
+              vm.airTarget = {}
+            }
+          }
+        })
+      },
+      getCityHourDataByAreaId () { // 实时空气质量指数
+        const vm = this
+        $.ajax({
+          // 参数 cityId  注释：areaId 改为cityId
+        url: 'http://180.76.119.77:9096/api/homePage/getCityHourDataByAreaId.action?cityId=130100',
+          success: (res) => {
+            console.log('获取天气的数据')
+            vm.airData = res.data
+            console.log(66666)
+            console.log(vm.airData)
+            console.log(66666)
+          }
+        })
+      },
+      broadcast () { // 播放的数据渲染
+        let data = {
+          cityName: '石家庄市',
+          // cityId     必传参数   格式：130100    （原来areaId改为cityId）
+          cityId: 130100
+        }
+        $.ajax({
+          url: 'http://180.76.119.77:9096/api/broadcast',
+          data: data,
+          success: res => {
+            console.log('获取播放的数据')
+            this.playData = res
+            console.log(this.playData)
+          }
+        })
+      },
+      // 时间处理方式
+      renderTime(date) {
+          var dateee = new Date(date).toJSON();
+          var str = new Date(+new Date(dateee) + 8 * 3600 * 1000)
+              .toISOString()
+              .replace(/T/g, " ")
+              .replace(/\.[\d]{3}Z/, "");
+        return str
+      },
       getCityRank () {
-        var dd = $(".city_sort_change .liFocus").text()
+        // var dd = $(".city_sort_change .liFocus").text()
+        var dd = this.DD
         console.log(dd)
-        var modelNum = ''
+        var modelNum = '1'
         if (dd == '168') {
-          modelNum = '2'
+          modelNum = '1'
         }else if(dd == '2+26') {
-          modelNum ='1'
-        }else if(dd == '省') {
-          modelNum ='4'
-        }else if(dd == '县') {
+          modelNum ='2'
+        }else if(dd == '省内') {
           modelNum ='3'
+        }else if(dd == '县区') {
+          modelNum ='4'
         }
         var sort = '1'
-        var  timedd =  $(".city_time_change .liFocus").text()
-        var Num = ''
+        // var  timedd =  $(".city_time_change .liFocus").text()
+        var timedd = this.TIMEDD
+        var Num = '1'
         if(timedd == '时') {
           Num ='1'
         }else if(timedd == '日') {
@@ -953,6 +1074,9 @@
           type: "get",
           url: httpUrl+'/api/getIndexAllPortData?modelNum='+modelNum+'&sort='+sort+'&Num='+Num,//服务器
           success: function(data){
+            console.log(333333333)
+            console.log(data)
+            console.log(333333333)
             if (Num == '1') {
               if(data.code =='200') {
                 if(data.data[0].code == '200'){
@@ -961,9 +1085,10 @@
                   for (var i in hourData) {
                     tmpData.push(
                       {
-                        cityName: hourData[i].area_name,
+                        cityName: hourData[i].city_name,
                         AQI: hourData[i].aqi,
-                        PM25: hourData[i].pm25,
+                        // PM25: hourData[i].pm25,pm25改为pm2_5
+                        PM25: hourData[i].pm2_5,
                         PM10: hourData[i].pm10,
                         O3: hourData[i].o3,
                         CO: hourData[i].co,

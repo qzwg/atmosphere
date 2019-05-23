@@ -360,12 +360,16 @@ body {
 .city_table {
   clear: both;
   height: 18vh;
-  /*overflow-y: scroll;*/
+  /* overflow-y: scroll; */
+  /* overflow-x: scroll; */
   padding: 5px;
 }
 
 .city_table table {
-  /*width: 600px;*/
+  width: 600px;
+  height: 18vh;
+  overflow-y: scroll!important;
+  overflow-x: scroll!important;
 }
 .city_table table thead th,.city_table table tr td{
   border: none !important;
@@ -805,6 +809,7 @@ ol li {
   width: 20%;
   height: 3vh;
   line-height: 3vh;
+  cursor: pointer;
   /*background-color: #666666;*/
   /*color: #999;*/
   /*border-radius: 5px;*/
@@ -1162,20 +1167,23 @@ ol li {
   left: 0;
   /*background-color: rgb(211,211,211);*/
   overflow: hidden;
+  /*border: 1px solid green;*/
 }
 .line_mark>div{
   height: 3vh;
-  width: 133%;
+  width: 133.5%;
   position: absolute;
   top: 0;
   left: 0;
   background-color: rgb(211, 211, 211);
+  /*border: 1px solid red;*/
 }
 .line_mark>div>div{
   padding: 0;
 }
 .line_mark_i {
   height: 1vh;
+
 }
 .line_mark_i ul{
   position: absolute;
@@ -1200,6 +1208,7 @@ ol li {
   height: 2vh;
   line-height: 2vh;
   background-color: rgba(26, 30, 51, .8);
+
 }
 .line_mark_num>div{
   width: 95%;
