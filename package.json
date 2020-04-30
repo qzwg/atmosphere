@@ -16,7 +16,7 @@
     "bootstrap": "^4.3.1",
     "font-awesome": "^4.7.0",
     "iview": "^3.3.3",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "popper.js": "^1.14.7",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
